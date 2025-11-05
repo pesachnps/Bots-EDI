@@ -177,8 +177,8 @@ This installation is made possible by the incredible work of the **Bots EDI** pr
 ### Special Thanks To
 
 #### 🏗️ Core Project Team
-- **Original Creator & Lead Developer**: The visionary developers who created Bots EDI as an open-source solution for electronic data interchange
-- **Current Maintainers**: The dedicated team that continues to develop, maintain, and support the Bots EDI platform
+- **Original Creator**: **Henk-Jan Ebbers** - The visionary founder and original developer who created Bots EDI as an open-source solution for electronic data interchange. His dedication and technical expertise laid the foundation for the entire Bots EDI ecosystem.
+- **Current Maintainers**: The dedicated team that continues to develop, maintain, and support the Bots EDI platform, building upon Henk-Jan's original vision
 - **Plugin Developers**: Contributors who have created and maintained the extensive plugin ecosystem
 
 #### 🌐 Community Contributors
@@ -214,6 +214,8 @@ The Bots EDI project has enabled:
 - Organizations to reduce costs through open-source solutions
 
 ---
+
+**A special thank you to Henk-Jan Ebbers, the original creator of Bots EDI, whose vision and technical leadership made this incredible open-source EDI solution possible. His dedication to creating a free, enterprise-grade EDI platform has benefited countless organizations worldwide.**
 
 **A heartfelt thank you to everyone who has contributed to making Bots EDI the powerful, flexible, and accessible EDI solution it is today. Your dedication to open-source values and business automation has made electronic data interchange available to organizations worldwide.**
 
