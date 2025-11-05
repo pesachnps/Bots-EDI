@@ -149,6 +149,70 @@ Test files are available in `botssys/infile/` for various EDI formats.
 - Check for core updates at: https://gitlab.com/bots-ediint/bots
 - Check for plugin updates at: https://gitlab.com/bots-ediint/bots-plugins
 
+## 🔌 **REST API** (NEW!)
+
+Bots EDI now includes a secure REST API for programmatic access without needing to log in to the web interface.
+
+### **Quick API Start**
+
+```bash
+# Initialize API permissions
+cd C:\Users\USER\.bots\env\default
+python usersys\api_management.py init_permissions
+
+# Create your first API key
+python usersys\api_management.py create "My API Key" edi_admin
+
+# Test the API
+curl -H "X-API-Key: YOUR_API_KEY" http://localhost:8080/api/v1/status
+```
+
+### **API Features**
+
+- 🔐 **Secure Authentication** - Token-based API keys
+- 🎯 **Permission Control** - Granular access permissions managed by admin
+- ⚡ **Rate Limiting** - Configurable request limits (default: 1000/hour)
+- 📊 **Audit Logging** - Complete request history and monitoring
+- 🌐 **IP Whitelisting** - Restrict access by IP address
+- 📁 **File Operations** - Upload, download, and list EDI files
+- 🚀 **Route Execution** - Trigger EDI translations programmatically
+- 📈 **Reporting** - Retrieve translation reports via API
+
+### **API Endpoints**
+
+- `POST /api/v1/files/upload` - Upload EDI files
+- `GET /api/v1/files/download/<file_id>` - Download files
+- `GET /api/v1/files/list` - List available files
+- `POST /api/v1/routes/execute` - Execute translation routes
+- `GET /api/v1/reports` - Get translation reports
+- `GET /api/v1/status` - Check API status and usage
+
+### **API Documentation**
+
+- **Complete Guide:** `API_DOCUMENTATION.md`
+- **Setup Instructions:** `API_SETUP_GUIDE.md`
+- **Testing Tool:** `test_api.py`
+- **Management CLI:** `usersys\api_management.py`
+
+### **Example Usage**
+
+```python
+import requests
+
+API_KEY = "your-api-key-here"
+headers = {"X-API-Key": API_KEY}
+
+# Upload a file
+with open("invoice.edi", "rb") as f:
+    files = {"file": f}
+    response = requests.post(
+        "http://localhost:8080/api/v1/files/upload",
+        headers=headers,
+        files=files
+    )
+print(response.json())
+```
+
 ## 🐳 Docker Support
 
 Full containerized deployment is available with Docker and Docker Compose.
