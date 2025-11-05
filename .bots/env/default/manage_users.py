@@ -63,6 +63,8 @@ def main():
     """Main function"""
     init_django()
     
+    print("⚠️  SECURITY REMINDER: Please change default passwords after first login!")
+    
     if len(sys.argv) < 2:
         print("Bots EDI User Management")
         print("\nUsage:")
@@ -70,6 +72,9 @@ def main():
         print("  python manage_users.py create <user> <pass>    - Create superuser")
         print("  python manage_users.py reset <user> <pass>     - Reset password")
         print("\nDefault login credentials:")
+        print("  Username: edi_admin")
+        print("  Password: Bots@2025!EDI")
+        print("\nAlternative (development):")
         print("  Username: bots")
         print("  Password: bots")
         return
