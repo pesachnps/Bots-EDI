@@ -118,6 +118,8 @@ Test files are available in `botssys/infile/` for various EDI formats.
 ## 📚 Documentation
 
 - **Official Bots Documentation**: https://bots.sourceforge.io/
+- **Current Development**: https://gitlab.com/bots-ediint/bots
+- **Plugin Repository**: https://gitlab.com/bots-ediint/bots-plugins
 - **EDI Standards**: 
   - EDIFACT: https://www.unece.org/cefact/untdid/d99a.htm
   - X12: https://www.x12.org/
@@ -134,6 +136,7 @@ Test files are available in `botssys/infile/` for various EDI formats.
 - Backup regularly recommended
 
 ### Updates
+- Check for core updates at: https://gitlab.com/bots-ediint/bots
 - Check for plugin updates at: https://gitlab.com/bots-ediint/bots-plugins
 
 ## 🐳 Docker Support
@@ -195,7 +198,8 @@ This installation is made possible by the incredible work of the **Bots EDI** pr
 ### Project Resources
 - **Official Website**: [bots-edi.org](https://bots-edi.org)
 - **Documentation**: [bots.sourceforge.io](https://bots.sourceforge.io/)
-- **Source Code**: [SourceForge](https://sourceforge.net/projects/bots/)
+- **Primary Source Code**: [GitLab](https://gitlab.com/bots-ediint/bots) - Current development and releases
+- **Legacy Source**: [SourceForge](https://sourceforge.net/projects/bots/) - Historical repository
 - **Plugin Repository**: [GitLab](https://gitlab.com/bots-ediint/bots-plugins)
 - **Community Support**: Active forums and discussion boards
 
