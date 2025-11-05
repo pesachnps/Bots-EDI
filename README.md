@@ -169,6 +169,54 @@ See `DOCKER.md` for complete Docker deployment guide, including:
 - **Configuration**: `config/bots.ini`
 - **Plugin Directory**: `usersys/`
 
+## 🙏 Credits & Acknowledgments
+
+### Bots EDI Project
+This installation is made possible by the incredible work of the **Bots EDI** project and its dedicated community of developers, maintainers, and contributors.
+
+### Special Thanks To
+
+#### 🏗️ Core Project Team
+- **Original Creator & Lead Developer**: The visionary developers who created Bots EDI as an open-source solution for electronic data interchange
+- **Current Maintainers**: The dedicated team that continues to develop, maintain, and support the Bots EDI platform
+- **Plugin Developers**: Contributors who have created and maintained the extensive plugin ecosystem
+
+#### 🌐 Community Contributors
+- **SourceForge Community**: Long-time contributors and users who have helped shape Bots EDI through feedback, bug reports, and feature requests
+- **GitLab Contributors**: The modern development community maintaining plugins and core functionality
+- **Documentation Writers**: Those who have created comprehensive guides and tutorials
+- **Support Community**: Helpful members who assist others in forums and discussion boards
+
+#### 📚 EDI Standards Organizations
+- **UNECE/CEFACT**: For the EDIFACT standards that form the backbone of international EDI
+- **X12 Organization**: For developing and maintaining the ANSI X12 standards
+- **GS1**: For global standards that enable seamless business communication
+
+### Project Resources
+- **Official Website**: [bots-edi.org](https://bots-edi.org)
+- **Documentation**: [bots.sourceforge.io](https://bots.sourceforge.io/)
+- **Source Code**: [SourceForge](https://sourceforge.net/projects/bots/)
+- **Plugin Repository**: [GitLab](https://gitlab.com/bots-ediint/bots-plugins)
+- **Community Support**: Active forums and discussion boards
+
+### Open Source Philosophy
+Bots EDI embodies the true spirit of open-source software:
+- **Free for Everyone**: No licensing fees or commercial restrictions
+- **Community Driven**: Developed and maintained by volunteers and contributors worldwide
+- **Enterprise Ready**: Production-grade software used by companies globally
+- **Educational Resource**: Learning platform for EDI standards and implementation
+
+### 🌟 Impact
+The Bots EDI project has enabled:
+- Small businesses to participate in global EDI networks
+- Educational institutions to teach EDI concepts
+- Developers to learn and contribute to enterprise software
+- Organizations to reduce costs through open-source solutions
+
+---
+
+**A heartfelt thank you to everyone who has contributed to making Bots EDI the powerful, flexible, and accessible EDI solution it is today. Your dedication to open-source values and business automation has made electronic data interchange available to organizations worldwide.**
+
 ---
 
 **Installation Date**: 2025-11-05  
