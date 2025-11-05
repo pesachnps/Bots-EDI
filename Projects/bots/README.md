@@ -119,22 +119,28 @@ TIME_ZONE=UTC
 ### Directory Structure
 
 ```
-env/default/
-├── config/
-│   ├── settings.py      # Django settings
-│   └── bots.ini         # Bots engine configuration
-├── botssys/             # System files (database, logs, archive)
-│   ├── data/
-│   ├── infile/          # Incoming EDI files
-│   ├── logging/
-│   ├── sqlitedb/
-│   └── static/
-└── usersys/             # User customizations
-    ├── grammars/        # EDI format definitions
-    ├── mappings/        # Translation mappings
-    ├── partners/        # Trading partner configs
-    ├── routescripts/    # Custom route logic
-    └── api_*.py         # REST API implementation
+bots/                    # Git repository root
+├── env/default/         # Bots environment
+│   ├── config/
+│   │   ├── settings.py      # Django settings
+│   │   └── bots.ini         # Bots engine configuration
+│   ├── botssys/             # System files (database, logs, archive)
+│   │   ├── data/
+│   │   ├── infile/          # Incoming EDI files
+│   │   ├── logging/
+│   │   ├── sqlitedb/
+│   │   └── static/
+│   ├── usersys/             # User customizations
+│   │   ├── grammars/        # EDI format definitions
+│   │   ├── mappings/        # Translation mappings
+│   │   ├── partners/        # Trading partner configs
+│   │   ├── routescripts/    # Custom route logic
+│   │   ├── migrations/      # Database migrations
+│   │   └── api_*.py         # REST API implementation
+│   └── manage_users.py      # User management CLI
+├── scripts/                 # Automation scripts
+├── tests/                   # Test suite
+└── *.md                     # Documentation files
 ```
 
 ## API Permissions
