@@ -61,7 +61,7 @@ Access the Bots web interface at: **http://localhost:8080**
 
 ### Directory Structure
 ```
-C:\Users\PGelfand\.bots\env\default\
+C:\Users\USER\.bots\env\default\
 ├── config/
 │   ├── bots.ini          # Main configuration
 │   └── settings.py       # Django settings
@@ -81,7 +81,7 @@ C:\Users\PGelfand\.bots\env\default\
 ### Starting/Stopping Services
 ```bash
 # Start Bots web server
-cd C:\Users\PGelfand\.bots\env\default
+cd C:\Users\USER\.bots\env\default
 python -c "import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
 
 # The web server runs automatically on http://localhost:8080
