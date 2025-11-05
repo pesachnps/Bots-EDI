@@ -7,6 +7,12 @@ This directory contains a complete Bots EDI (Electronic Data Interchange) instal
 ### Web Interface
 Access the Bots web interface at: **http://localhost:8080**
 
+**Default Login Credentials:**
+- **Username**: `bots`
+- **Password**: `bots`
+
+*Note: The default account has superuser privileges. Please change the password after first login for security.*
+
 ### System Status
 - ✅ Bots EDI Engine: Installed and running
 - ✅ Web Server: Running on port 8080
@@ -168,9 +174,17 @@ See `DOCKER.md` for complete Docker deployment guide, including:
 
 ## 📞 Support
 
-- **Web Interface**: http://localhost:8080
-- **Configuration**: `config/bots.ini`
+### Web Interface Access
+- **URL**: http://localhost:8080
+- **Default Username**: `bots`
+- **Default Password**: `bots`
+- **User Management**: Use `python manage_users.py` in the Bots directory
+
+### Configuration Files
+- **Main Config**: `config/bots.ini`
+- **Django Settings**: `config/settings.py`
 - **Plugin Directory**: `usersys/`
+- **User Management Script**: `manage_users.py`
 
 ## 🙏 Credits & Acknowledgments
 
