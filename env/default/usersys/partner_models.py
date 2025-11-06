@@ -782,3 +782,249 @@ class PasswordResetToken(models.Model):
         self.used = True
         self.used_at = timezone.now()
         self.save(update_fields=['used', 'used_at'])
+
+
+class ScheduledReport(models.Model):
+    """Scheduled reports that can be emailed to recipients"""
+    
+    REPORT_TYPE_CHOICES = [
+        ('inventory_846', '846 Inventory Report'),
+        ('analytics_summary', 'Analytics Summary'),
+        ('transaction_history', 'Transaction History'),
+        ('partner_activity', 'Partner Activity'),
+        ('error_summary', 'Error Summary'),
+        ('document_summary', 'Document Summary by Type'),
+        ('custom', 'Custom Report'),
+    ]
+    
+    FORMAT_CHOICES = [
+        ('csv', 'CSV'),
+        ('excel', 'Excel (XLSX)'),
+        ('json', 'JSON'),
+        ('xml', 'XML'),
+    ]
+    
+    FREQUENCY_CHOICES = [
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+        ('on_demand', 'On Demand Only'),
+    ]
+    
+    # Basic Information
+    partner = models.ForeignKey(
+        Partner,
+        on_delete=models.CASCADE,
+        related_name='scheduled_reports',
+        help_text="Partner this report is for"
+    )
+    name = models.CharField(
+        max_length=255,
+        help_text="Descriptive name for this report"
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Optional description of what this report contains"
+    )
+    
+    # Report Configuration
+    report_type = models.CharField(
+        max_length=50,
+        choices=REPORT_TYPE_CHOICES,
+        db_index=True,
+        help_text="Type of report to generate"
+    )
+    format = models.CharField(
+        max_length=20,
+        choices=FORMAT_CHOICES,
+        default='csv',
+        help_text="Output format for the report"
+    )
+    
+    # Recipients
+    recipients = models.JSONField(
+        default=list,
+        help_text="List of email addresses to send report to"
+    )
+    
+    # Schedule Settings
+    frequency = models.CharField(
+        max_length=20,
+        choices=FREQUENCY_CHOICES,
+        default='weekly',
+        db_index=True,
+        help_text="How often to run this report"
+    )
+    day_of_week = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="For weekly reports: 0=Monday, 6=Sunday"
+    )
+    day_of_month = models.IntegerField(
+        null=True,
+        blank=True,
+        help_text="For monthly reports: 1-31 or -1 for last day"
+    )
+    time_of_day = models.TimeField(
+        default='09:00:00',
+        help_text="Time to run the report (HH:MM:SS)"
+    )
+    timezone = models.CharField(
+        max_length=50,
+        default='UTC',
+        help_text="Timezone for scheduling"
+    )
+    
+    # Filters
+    filters = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Filters to apply to the report data"
+    )
+    date_range_days = models.IntegerField(
+        default=30,
+        help_text="Number of days to include in report"
+    )
+    
+    # Status
+    is_active = models.BooleanField(
+        default=True,
+        db_index=True,
+        help_text="Whether this schedule is active"
+    )
+    last_run = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When this report was last executed"
+    )
+    last_run_status = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Status of last run (success, failed, etc.)"
+    )
+    last_run_error = models.TextField(
+        blank=True,
+        help_text="Error message from last run if failed"
+    )
+    next_run = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When this report is scheduled to run next"
+    )
+    run_count = models.IntegerField(
+        default=0,
+        help_text="Total number of times this report has been executed"
+    )
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_reports'
+    )
+    
+    class Meta:
+        verbose_name = "Scheduled Report"
+        verbose_name_plural = "Scheduled Reports"
+        app_label = 'usersys'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['partner', '-created_at']),
+            models.Index(fields=['report_type']),
+            models.Index(fields=['is_active', 'next_run']),
+            models.Index(fields=['frequency']),
+        ]
+    
+    def __str__(self):
+        return f"{self.name} ({self.partner.name}) - {self.get_frequency_display()}"
+    
+    def calculate_next_run(self):
+        """Calculate the next run time based on frequency"""
+        from django.utils import timezone
+        from datetime import timedelta, time, datetime
+        import pytz
+        
+        if self.frequency == 'on_demand':
+            self.next_run = None
+            return
+        
+        tz = pytz.timezone(self.timezone)
+        now = timezone.now().astimezone(tz)
+        
+        # Combine date with configured time
+        target_time = self.time_of_day
+        
+        if self.frequency == 'daily':
+            # Next occurrence of the target time
+            next_run = datetime.combine(now.date(), target_time)
+            if next_run <= now:
+                next_run += timedelta(days=1)
+        
+        elif self.frequency == 'weekly':
+            # Next occurrence of the specified day of week
+            days_ahead = (self.day_of_week - now.weekday()) % 7
+            if days_ahead == 0:
+                # Today is the day, check if time has passed
+                next_run = datetime.combine(now.date(), target_time)
+                if next_run <= now:
+                    days_ahead = 7
+            next_run = datetime.combine(now.date() + timedelta(days=days_ahead), target_time)
+        
+        elif self.frequency == 'monthly':
+            # Next occurrence of the specified day of month
+            from calendar import monthrange
+            
+            if self.day_of_month == -1:
+                # Last day of month
+                last_day = monthrange(now.year, now.month)[1]
+                target_day = last_day
+            else:
+                target_day = self.day_of_month
+            
+            try:
+                next_run = datetime.combine(
+                    now.replace(day=target_day).date(),
+                    target_time
+                )
+                if next_run <= now:
+                    # Move to next month
+                    if now.month == 12:
+                        next_month = now.replace(year=now.year + 1, month=1)
+                    else:
+                        next_month = now.replace(month=now.month + 1)
+                    
+                    if self.day_of_month == -1:
+                        last_day = monthrange(next_month.year, next_month.month)[1]
+                        target_day = last_day
+                    
+                    next_run = datetime.combine(
+                        next_month.replace(day=target_day).date(),
+                        target_time
+                    )
+            except ValueError:
+                # Day doesn't exist in current month, move to next month
+                if now.month == 12:
+                    next_month = now.replace(year=now.year + 1, month=1, day=1)
+                else:
+                    next_month = now.replace(month=now.month + 1, day=1)
+                next_run = datetime.combine(next_month.date(), target_time)
+        
+        else:
+            next_run = now
+        
+        # Convert to UTC for storage
+        self.next_run = tz.localize(next_run).astimezone(pytz.UTC)
+    
+    def mark_as_run(self, status='success', error=None):
+        """Mark report as executed"""
+        from django.utils import timezone
+        self.last_run = timezone.now()
+        self.last_run_status = status
+        self.last_run_error = error or ''
+        self.run_count += 1
+        self.calculate_next_run()
+        self.save(update_fields=['last_run', 'last_run_status', 'last_run_error', 'run_count', 'next_run'])

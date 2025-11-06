@@ -3,7 +3,7 @@ Email Service for Partner Portal
 Handles sending emails for password resets and notifications
 """
 
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.html import strip_tags
@@ -338,4 +338,196 @@ If you have any questions or need assistance, please contact your system adminis
 ---
 {context['site_name']}
 This is an automated message. Please do not reply to this email.
+"""
+    
+    @staticmethod
+    def send_scheduled_report(report, file_content, filename):
+        """
+        Send scheduled report email with attachment
+        
+        Args:
+            report: ScheduledReport instance
+            file_content: bytes of the report file
+            filename: name for the attachment
+        """
+        try:
+            base_url = getattr(settings, 'SITE_URL', 'http://localhost:8080')
+            site_name = getattr(settings, 'SITE_NAME', 'EDI System')
+            
+            context = {
+                'report': report,
+                'site_name': site_name,
+                'base_url': base_url,
+            }
+            
+            subject = f"{report.name} - {report.partner.name}"
+            html_message = EmailService._render_scheduled_report_html(context)
+            plain_message = EmailService._render_scheduled_report_text(context)
+            
+            # Create email with attachment
+            email = EmailMessage(
+                subject=subject,
+                body=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=report.recipients
+            )
+            
+            # Add HTML alternative
+            email.attach_alternative(html_message, "text/html")
+            
+            # Determine MIME type based on format
+            mime_types = {
+                'csv': 'text/csv',
+                'excel': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'json': 'application/json',
+                'xml': 'application/xml',
+            }
+            mime_type = mime_types.get(report.format, 'application/octet-stream')
+            
+            # Attach report file
+            email.attach(filename, file_content, mime_type)
+            
+            # Send
+            email.send(fail_silently=False)
+            
+            logger.info(f"Scheduled report '{report.name}' sent to {len(report.recipients)} recipients")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send scheduled report email: {str(e)}")
+            return False
+    
+    @staticmethod
+    def _render_scheduled_report_html(context):
+        """Render HTML email template for scheduled report"""
+        report = context['report']
+        return f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }}
+        .container {{
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        .header {{
+            background-color: #4F46E5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }}
+        .content {{
+            background-color: #f9f9f9;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }}
+        .info-box {{
+            background-color: #E0E7FF;
+            border-left: 4px solid #4F46E5;
+            padding: 15px;
+            margin: 20px 0;
+        }}
+        .footer {{
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }}
+        td {{
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }}
+        td:first-child {{
+            font-weight: bold;
+            width: 40%;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{context['site_name']}</h1>
+            <p>Scheduled Report</p>
+        </div>
+        <div class="content">
+            <h2>{report.name}</h2>
+            <p>Your scheduled report has been generated and is attached to this email.</p>
+            <div class="info-box">
+                <table>
+                    <tr>
+                        <td>Partner:</td>
+                        <td>{report.partner.name}</td>
+                    </tr>
+                    <tr>
+                        <td>Report Type:</td>
+                        <td>{report.get_report_type_display()}</td>
+                    </tr>
+                    <tr>
+                        <td>Format:</td>
+                        <td>{report.get_format_display()}</td>
+                    </tr>
+                    <tr>
+                        <td>Date Range:</td>
+                        <td>{report.date_range_days} days</td>
+                    </tr>
+                    <tr>
+                        <td>Frequency:</td>
+                        <td>{report.get_frequency_display()}</td>
+                    </tr>
+                    <tr>
+                        <td>Generated At:</td>
+                        <td>{report.last_run.strftime('%Y-%m-%d %H:%M:%S UTC') if report.last_run else 'N/A'}</td>
+                    </tr>
+                </table>
+            </div>
+            {f'<p><strong>Description:</strong> {report.description}</p>' if report.description else ''}
+            <p>The report is attached to this email. If you have any questions about this report, please contact your system administrator.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 {context['site_name']}. All rights reserved.</p>
+            <p>This is an automated report. You can manage your report subscriptions in the partner portal.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+    
+    @staticmethod
+    def _render_scheduled_report_text(context):
+        """Render plain text email template for scheduled report"""
+        report = context['report']
+        return f"""
+{context['site_name']} - Scheduled Report
+
+{report.name}
+
+Your scheduled report has been generated and is attached to this email.
+
+REPORT DETAILS:
+Partner: {report.partner.name}
+Report Type: {report.get_report_type_display()}
+Format: {report.get_format_display()}
+Date Range: {report.date_range_days} days
+Frequency: {report.get_frequency_display()}
+Generated At: {report.last_run.strftime('%Y-%m-%d %H:%M:%S UTC') if report.last_run else 'N/A'}
+
+{f'Description: {report.description}' if report.description else ''}
+
+The report is attached to this email. If you have any questions about this report, please contact your system administrator.
+
+---
+{context['site_name']}
+This is an automated report. You can manage your report subscriptions in the partner portal.
 """
