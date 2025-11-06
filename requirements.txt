@@ -1,0 +1,38 @@
+# Bots EDI Environment Requirements
+
+# Core Bots EDI Framework
+bots>=4.0.0
+
+# Django Framework
+Django>=3.2,<5.0
+
+# Database Drivers
+# SQLite is included with Python
+# Uncomment for PostgreSQL:
+# psycopg2-binary>=2.9.0
+# Uncomment for MySQL:
+# mysqlclient>=2.1.0
+
+# Web Server
+cherrypy>=18.6.0
+
+# Utilities
+python-dateutil>=2.8.0
+pytz>=2021.1
+
+# Optional: Enhanced functionality
+# For Excel support
+# openpyxl>=3.0.0
+# xlrd>=2.0.0
+
+# For SFTP support
+# paramiko>=2.7.0
+
+# For enhanced XML processing
+# lxml>=4.6.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# pytest-django>=4.5.0
+# black>=22.0.0
+# flake8>=4.0.0

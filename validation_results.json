@@ -1,0 +1,321 @@
+{
+  "timestamp": "2025-11-06T14:44:47.517905",
+  "total_files": 18,
+  "passed": 17,
+  "failed": 1,
+  "skipped": 0,
+  "files": {
+    "753004010.py": {
+      "filename": "753004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\753004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "754004010.py": {
+      "filename": "754004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\754004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "810004010.py": {
+      "filename": "810004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\810004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "820004010.py": {
+      "filename": "820004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\820004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "846004010.py": {
+      "filename": "846004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\846004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "850004010.py": {
+      "filename": "850004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\850004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "852004010.py": {
+      "filename": "852004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\852004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "855004010.py": {
+      "filename": "855004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\855004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "856004010.py": {
+      "filename": "856004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\856004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "860004010.py": {
+      "filename": "860004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\860004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "865004010.py": {
+      "filename": "865004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\865004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "940004010.py": {
+      "filename": "940004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\940004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "943004010.py": {
+      "filename": "943004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\943004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "944004010.py": {
+      "filename": "944004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\944004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "945004010.py": {
+      "filename": "945004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\945004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "947004010.py": {
+      "filename": "947004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\947004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "997004010.py": {
+      "filename": "997004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\997004010.py",
+      "status": "passed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": true,
+          "messages": [
+            "Valid structure"
+          ]
+        }
+      }
+    },
+    "records004010.py": {
+      "filename": "records004010.py",
+      "path": "C:\\Users\\PGelfand\\Projects\\bots\\env\\default\\usersys\\grammars\\x12\\records004010.py",
+      "status": "failed",
+      "tests": {
+        "python_syntax": {
+          "passed": true,
+          "message": "Valid Python syntax"
+        },
+        "structure": {
+          "passed": false,
+          "messages": [
+            "Missing recorddefs import",
+            "Missing syntax dictionary",
+            "Missing structure array",
+            "Missing ST (Transaction Set Header) segment",
+            "Missing SE (Transaction Set Trailer) segment",
+            "Missing 'functionalgroup' in syntax dictionary",
+            "Missing 'version' in syntax dictionary"
+          ]
+        }
+      }
+    }
+  }
+}
