@@ -1,0 +1,5 @@
+2025.11.05 15:36:02 STARTINFO [__main__] Starting ...
+2025.11.05 15:36:03 STARTINFO [__main__] configdir: "C:\Users\PGelfand\.bots\env\default\config".
+2025.11.05 15:36:03 STARTINFO [__main__] using plain http (no ssl).
+2025.11.05 15:36:03 STARTINFO [__main__] Serving at port: "8080".
+2025.11.05 16:24:38 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".
