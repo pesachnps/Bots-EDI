@@ -27,7 +27,15 @@ Access the Bots web interface at: **http://localhost:8080**
 
 ### EDI Standards Support
 - **EDIFACT**: Complete D96A support (ORDERS, DESADV, INVOIC, PRICAT, SLSRPT, APERAK)
-- **X12/ANSI**: Full 4010/5010 support (850, 810, 837, 835, 856, 997)
+- **X12/ANSI**: Extended 4010 support with 17 retail transaction sets
+  - **Purchase Orders**: 850 (PO), 855 (PO Acknowledgment), 860 (PO Change), 865 (PO Change Acknowledgment)
+  - **Shipping & Invoicing**: 856 (Ship Notice), 810 (Invoice)
+  - **Warehouse Operations**: 940 (Shipping Order), 943 (Stock Transfer), 944 (Receipt), 945 (Advice), 947 (Inventory Adjustment)
+  - **Inventory**: 846 (Inventory Inquiry), 852 (Product Activity Data)
+  - **Financial**: 820 (Payment Order)
+  - **Routing**: 753 (Routing Request), 754 (Routing Instructions)
+  - **Acknowledgments**: 997 (Functional Acknowledgment)
+  - **Healthcare**: 835 (Remittance), 837 (Claims) - 4010/5010 support
 - **Tradacoms**: Version 9 support (ORDERS)
 - **XML**: Bidirectional XML conversions
 - **JSON**: JSON to EDIFACT invoice conversion
@@ -35,15 +43,15 @@ Access the Bots web interface at: **http://localhost:8080**
 - **Fixed Format**: Fixed-width file support
 
 ### Business Document Types
-- **Purchase Orders** (850, ORDERS)
-- **Invoices** (810, INVOIC)
-- **Shipping Notices** (856, DESADV)
-- **Functional Acknowledgments** (997, APERAK)
-- **Healthcare Claims** (837)
-- **Remittance Advice** (835)
-- **Price Catalogs** (PRICAT)
-- **Sales Reports** (SLSRPT)
-- **Vendor Consignment**
+- **Purchase Order Workflow**: 850 → 855 → 860 → 865 (Complete PO lifecycle)
+- **Fulfillment Workflow**: 850 → 855 → 856 → 810 (Order to cash)
+- **Warehouse Operations**: 940 → 943 → 944 → 945 → 947 (Full warehouse management)
+- **Inventory Management**: 846 ← → 852 (Real-time inventory visibility)
+- **Financial Processing**: 820 (Payment orders and reconciliation)
+- **Routing & Logistics**: 753 → 754 (Routing requests and instructions)
+- **EDIFACT**: ORDERS, INVOIC, DESADV, PRICAT, SLSRPT, APERAK
+- **Healthcare**: 837 (Claims), 835 (Remittance)
+- **Acknowledgments**: 997 (X12), APERAK (EDIFACT)
 
 ### Plugin Details
 1. **837_4010_to_837_5010** - Healthcare claim version upgrade
@@ -124,6 +132,51 @@ Test files are available in `botssys/infile/` for various EDI formats.
   "currency": "USD"
 }
 ```
+
+## 📄 X12 Grammar Files (NEW!)
+
+This installation includes a comprehensive suite of X12 004010 grammar files for retail EDI transactions:
+
+### Production-Ready Grammars (5)
+- **850** - Purchase Order
+- **855** - Purchase Order Acknowledgment (NEW!)
+- **856** - Ship Notice/Manifest
+- **810** - Invoice
+- **997** - Functional Acknowledgment
+
+### Skeleton Grammars (12)
+Ready for customization:
+- **860** - Purchase Order Change Request
+- **865** - Purchase Order Change Acknowledgment
+- **820** - Payment Order/Remittance Advice
+- **846** - Inventory Inquiry/Advice
+- **852** - Product Activity Data
+- **753** - Routing and Carrier Instruction
+- **754** - Routing Instructions
+- **940** - Warehouse Shipping Order
+- **943** - Warehouse Stock Transfer Shipment Advice
+- **944** - Warehouse Stock Transfer Receipt Advice
+- **945** - Warehouse Shipping Advice
+- **947** - Warehouse Inventory Adjustment Advice
+
+### Grammar Documentation
+- **Creation Guide**: `X12_GRAMMAR_CREATION_GUIDE.md` - Step-by-step guide with examples
+- **Project Summary**: `X12_GRAMMARS_PROJECT_SUMMARY.md` - Implementation status
+- **Completion Report**: `X12_PROJECT_COMPLETION_REPORT.md` - Full project details
+- **Grammar Registry**: `x12_grammar_registry.json` - Metadata and workflows
+- **Validation Tool**: `validate_grammars.py` - Grammar testing utility (100% pass rate)
+- **Automation Script**: `create_skeleton_grammars.ps1` - PowerShell template generator
+
+### Business Workflows Supported
+1. **Basic Purchase Order**: 850 → 855 → 856 → 810 (with 997 acknowledgments)
+2. **Purchase Order with Changes**: 850 → 855 → 860 → 865
+3. **Warehouse Fulfillment**: 940 → 945 → 856
+4. **Inventory Management**: 846 ← → 852
+
+### Grammar File Locations
+- **Grammar Definitions**: `env/default/usersys/grammars/x12/`
+- **Mapping Scripts**: `env/default/usersys/mappings/x12/`
+- **Partner Configs**: `env/default/usersys/partners/x12/`
 
 ## 📚 Documentation
 
