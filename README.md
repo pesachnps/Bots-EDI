@@ -15,7 +15,7 @@ Admins can now configure SFTP access for each trading partner:
 - **Customizable directory structure** (inbound/outbound/archive)
 - **File pattern matching** with variables
 - **Activity logging** for compliance
-- **Documentation**: See `SFTP_CONFIGURATION_GUIDE.md`
+- **Documentation**: See `docs/SFTP_CONFIGURATION_GUIDE.md`
 
 #### ✅ Scheduled Reports System
 Automated report generation and email delivery:
@@ -27,7 +27,7 @@ Automated report generation and email delivery:
 - **Admin & Partner APIs**: 12 endpoints for full report management
 - **Background scheduler**: Cron-compatible Django management command
 - **Activity logging**: Complete audit trail for compliance
-- **Documentation**: See `SCHEDULED_REPORTS_GUIDE.md`
+- **Documentation**: See `docs/SCHEDULED_REPORTS_GUIDE.md`
 
 #### ✅ X12 Grammar Expansion
 Extended X12 004010 support from 5 to 17 transaction sets:
