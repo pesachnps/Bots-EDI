@@ -75,9 +75,9 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:space-x-4">
           <label className="flex items-center text-sm text-gray-600">
             <input
               type="checkbox"
@@ -89,13 +89,12 @@ export default function AdminDashboard() {
           </label>
           <button
             onClick={fetchMetrics}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+            className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
           >
             Refresh Now
           </button>
         </div>
       </div>
-
       {/* Metric Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {metricCards.map((card) => (

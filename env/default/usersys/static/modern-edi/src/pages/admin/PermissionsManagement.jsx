@@ -77,7 +77,7 @@ export default function PermissionsManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Permissions Management</h1>
       </div>
 
@@ -112,8 +112,9 @@ export default function PermissionsManagement() {
           <div className="text-gray-500">No users found for this partner</div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
@@ -173,6 +174,7 @@ export default function PermissionsManagement() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
