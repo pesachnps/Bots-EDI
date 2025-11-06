@@ -160,9 +160,9 @@ Ready for customization:
 - **947** - Warehouse Inventory Adjustment Advice
 
 ### Grammar Documentation
-- **Creation Guide**: `X12_GRAMMAR_CREATION_GUIDE.md` - Step-by-step guide with examples
-- **Project Summary**: `X12_GRAMMARS_PROJECT_SUMMARY.md` - Implementation status
-- **Completion Report**: `X12_PROJECT_COMPLETION_REPORT.md` - Full project details
+- **Creation Guide**: `docs/X12_GRAMMAR_CREATION_GUIDE.md` - Step-by-step guide with examples
+- **Project Summary**: `docs/X12_GRAMMARS_PROJECT_SUMMARY.md` - Implementation status
+- **Completion Report**: `docs/X12_PROJECT_COMPLETION_REPORT.md` - Full project details
 - **Grammar Registry**: `x12_grammar_registry.json` - Metadata and workflows
 - **Validation Tool**: `validate_grammars.py` - Grammar testing utility (100% pass rate)
 - **Automation Script**: `create_skeleton_grammars.ps1` - PowerShell template generator
@@ -242,8 +242,8 @@ curl -H "X-API-Key: YOUR_API_KEY" http://localhost:8080/api/v1/status
 
 ### **API Documentation**
 
-- **Complete Guide:** `API_DOCUMENTATION.md`
-- **Setup Instructions:** `API_SETUP_GUIDE.md`
+- **Complete Guide:** `docs/API_DOCUMENTATION.md`
+- **Setup Instructions:** `docs/API_SETUP_GUIDE.md`
 - **Testing Tool:** `test_api.py`
 - **Management CLI:** `usersys\api_management.py`
 
@@ -265,6 +265,83 @@ with open("invoice.edi", "rb") as f:
     )
 print(response.json())
 ```
+
+## 🎯 Admin Dashboard & Partner Portal (NEW!)
+
+**Status:** Backend Complete ✅ | Frontend Documented 📋
+
+A comprehensive management system for EDI operations with secure partner access.
+
+### Admin Dashboard Features
+- **System Monitoring**: Real-time metrics, transaction volume, success rates
+- **Partner Management**: Complete partner lifecycle management
+- **User Administration**: Create/manage partner users with role-based access
+- **Analytics**: Transaction analytics, partner performance, document type breakdown
+- **Activity Logs**: Complete audit trail with search, filter, and CSV export
+- **Permission Management**: Granular permission control (5 permission types)
+
+### Partner Portal Features
+- **Self-Service Dashboard**: Partner-specific metrics and recent transactions
+- **Transaction Management**: View, search, and filter transactions
+- **File Operations**: Upload EDI files, download received files, bulk download
+- **Settings Management**: Update contact info, test connections
+- **Secure Authentication**: Password reset, account lockout protection
+- **Role-Based Access**: Admin, User, and Read-Only roles
+
+### Security Features
+- ✅ Django password hashing (PBKDF2-SHA256)
+- ✅ Account lockout (5 failed attempts, 15-min lockout)
+- ✅ Session timeout (30 minutes inactivity)
+- ✅ Password complexity requirements
+- ✅ Complete activity logging with IP tracking
+- ✅ Partner data isolation
+- ✅ Permission-based access control
+
+### API Endpoints
+- **Admin Dashboard**: 15 endpoints for system management
+- **Partner Portal**: 14 endpoints for partner self-service
+- **Modern EDI Interface**: Transaction management with 5-folder workflow
+
+### Documentation
+- **[Admin Dashboard Guide](docs/ADMIN_DASHBOARD_GUIDE.md)** - Complete admin user guide
+- **[Partner Portal Guide](docs/PARTNER_PORTAL_GUIDE.md)** - Partner user guide
+- **[User Management Guide](docs/USER_MANAGEMENT_GUIDE.md)** - User administration
+- **[API Documentation](docs/ADMIN_PARTNER_API_DOCUMENTATION.md)** - Complete API reference
+- **[Deployment Guide](docs/ADMIN_PARTNER_DEPLOYMENT.md)** - Deployment instructions
+- **[Backend Operations](docs/BACKEND_OPERATIONS_GUIDE.md)** - Common operations
+- **[Frontend Build Guide](docs/FRONTEND_BUILD_GUIDE.md)** - Build and deployment
+- **[Security Guide](docs/PASSWORD_SECURITY_GUIDE.md)** - Password security best practices
+- **[Performance Guide](docs/PERFORMANCE_OPTIMIZATION_GUIDE.md)** - Optimization tips
+
+### Quick Start
+```bash
+# Run migrations
+cd env/default
+python manage.py migrate usersys
+
+# Initialize system
+python usersys/init_admin_partner_portals.py
+
+# Create test user
+python manage.py shell
+from usersys.user_manager import UserManager
+from usersys.partner_models import Partner
+partner = Partner.objects.first()
+user = UserManager.create_user(
+    partner_id=partner.id,
+    username='testuser',
+    email='test@example.com',
+    password='Test123!@#',
+    first_name='Test',
+    last_name='User',
+    role='partner_admin'
+)
+```
+
+### Access Points
+- **Admin Dashboard**: http://localhost:8080/modern-edi/admin/
+- **Partner Portal**: http://localhost:8080/modern-edi/partner-portal/
+- **API Base**: http://localhost:8080/modern-edi/api/v1/
 
 ## 🐳 Docker Support
 
@@ -364,6 +441,42 @@ The Bots EDI project has enabled:
 
 ---
 
+## 📅 Recent Updates (November 6, 2025)
+
+### Admin Dashboard & Partner Portal System
+- ✅ **Backend Complete**: 27+ API endpoints, 4 database models, complete authentication
+- ✅ **Security Verified**: All passwords hashed with Django's PBKDF2-SHA256
+- ✅ **User Management**: Role-based access with granular permissions
+- ✅ **Analytics**: Real-time metrics, charts, and reporting
+- ✅ **Activity Logging**: Complete audit trail for compliance
+- ✅ **File Operations**: Upload/download with validation and bulk operations
+- ✅ **Documentation**: 10 comprehensive guides created
+- ✅ **Performance**: Optimized with caching and database indexes
+- ✅ **Email Service**: Password reset and welcome emails
+- ✅ **Management Commands**: Initialization and cleanup utilities
+
+### Security Enhancements
+- ✅ Password hashing verification completed
+- ✅ Account lockout protection (5 attempts, 15-min lockout)
+- ✅ Session management (30-min timeout)
+- ✅ Password complexity enforcement
+- ✅ Complete security verification and testing
+
+### Documentation Added
+- `docs/ADMIN_DASHBOARD_GUIDE.md` - Admin user guide
+- `docs/PARTNER_PORTAL_GUIDE.md` - Partner user guide
+- `docs/USER_MANAGEMENT_GUIDE.md` - User administration
+- `docs/ADMIN_PARTNER_API_DOCUMENTATION.md` - Complete API reference
+- `docs/BACKEND_OPERATIONS_GUIDE.md` - Common operations
+- `docs/BACKEND_DEPLOYMENT_CHECKLIST.md` - Deployment steps
+- `docs/FRONTEND_BUILD_GUIDE.md` - Build and deployment
+- `docs/PASSWORD_SECURITY_GUIDE.md` - Security best practices
+- `docs/SECURITY_VERIFICATION_SUMMARY.md` - Security audit results
+- `docs/PERFORMANCE_OPTIMIZATION_GUIDE.md` - Performance tips
+
+---
+
 **Installation Date**: 2025-11-05  
-**Version**: Bots EDI with 20 plugins  
-**Total Files**: 516 plugin components
+**Last Updated**: 2025-11-06  
+**Version**: Bots EDI with 20 plugins + Admin/Partner Portals  
+**Total Files**: 516 plugin components + 13 new backend files
