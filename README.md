@@ -2,6 +2,73 @@
 
 This directory contains a complete Bots EDI (Electronic Data Interchange) installation with comprehensive plugin support.
 
+## 🆕 Recent Changes
+
+### November 2025 - Major Feature Updates
+
+#### ✅ SFTP Configuration Management System
+Admins can now configure SFTP access for each trading partner:
+- **Full CRUD API** for SFTP configurations per partner
+- **Secure credential generation** (16-character passwords with special characters)
+- **Real-time connection testing** with directory validation
+- **Multiple authentication methods**: Password, SSH Key, or both
+- **Customizable directory structure** (inbound/outbound/archive)
+- **File pattern matching** with variables
+- **Activity logging** for compliance
+- **Documentation**: See `SFTP_CONFIGURATION_GUIDE.md`
+
+#### ✅ Scheduled Reports System
+Automated report generation and email delivery:
+- **7 Report Types**: 846 Inventory, Analytics Summary, Transaction History, Partner Activity, Error Summary, Document Summary, Custom
+- **4 Export Formats**: CSV, Excel (XLSX), JSON, XML with professional styling
+- **Flexible Scheduling**: Daily, Weekly, Monthly, or On-Demand
+- **Timezone-aware** scheduling with smart next-run calculation
+- **Professional HTML email templates** with report attachments
+- **Admin & Partner APIs**: 12 endpoints for full report management
+- **Background scheduler**: Cron-compatible Django management command
+- **Activity logging**: Complete audit trail for compliance
+- **Documentation**: See `SCHEDULED_REPORTS_GUIDE.md`
+
+#### ✅ X12 Grammar Expansion
+Extended X12 004010 support from 5 to 17 transaction sets:
+- **12 new skeleton grammars** ready for customization
+- **Complete retail workflows**: PO lifecycle, warehouse operations, inventory management
+- **Validation tooling**: 100% pass rate on all grammars
+- **Comprehensive documentation** with step-by-step guides
+
+### Quick Start for New Features
+
+**SFTP Configuration**:
+```bash
+# Generate secure credentials
+POST /api/v1/admin/sftp/generate-credentials
+
+# Configure SFTP for a partner
+POST /api/v1/admin/partners/{partner_id}/sftp-config
+
+# Test connection
+POST /api/v1/admin/partners/{partner_id}/sftp-config/test
+```
+
+**Scheduled Reports**:
+```bash
+# Install dependency
+pip install openpyxl
+
+# Set up cron (runs every 5 minutes)
+*/5 * * * * cd /path/to/bots && python manage.py run_scheduled_reports
+
+# Create a weekly analytics report
+POST /api/v1/admin/scheduled-reports
+{
+  "name": "Weekly Analytics",
+  "report_type": "analytics_summary",
+  "format": "excel",
+  "frequency": "weekly",
+  "recipients": ["partner@example.com"]
+}
+```
+
 ## 🚀 Quick Start
 
 ### Web Interface
