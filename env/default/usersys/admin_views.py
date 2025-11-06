@@ -15,6 +15,7 @@ from .analytics_service import AnalyticsService
 from .user_manager import UserManager
 from .activity_logger import ActivityLogger, log_activity
 from .partner_models import Partner, PartnerUser, ActivityLog
+from .sftp_config_service import SFTPConfigService
 
 
 # Dashboard Overview Endpoints
@@ -609,5 +610,186 @@ def admin_activity_logs_export(request):
         response['Content-Disposition'] = 'attachment; filename="activity_logs.csv"'
         return response
         
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# SFTP Configuration Management Endpoints
+
+@require_http_methods(["GET"])
+def admin_partner_sftp_config(request, partner_id):
+    """
+    Get SFTP configuration for a partner
+    GET /api/v1/admin/partners/<id>/sftp-config
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        sftp_config = SFTPConfigService.get_sftp_config(partner_id)
+        
+        if not sftp_config:
+            return JsonResponse({
+                'success': True,
+                'has_config': False,
+                'config': None
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'has_config': True,
+            'config': sftp_config
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_partner_sftp_config_create(request, partner_id):
+    """
+    Create SFTP configuration for a partner
+    POST /api/v1/admin/partners/<id>/sftp-config
+    Body: {
+        "host": "sftp.example.com",
+        "port": 22,
+        "username": "partner_sftp",
+        "auth_method": "password" | "key" | "both",
+        "password": "...",  // if auth_method includes password
+        "private_key_path": "/path/to/key",  // if auth_method includes key
+        "inbound_directory": "/inbound",
+        "outbound_directory": "/outbound",
+        "archive_directory": "/archive",  // optional
+        "inbound_file_pattern": "*.edi",
+        "outbound_file_pattern": "{document_type}_{timestamp}.edi",
+        "timeout": 30,
+        "passive_mode": true,
+        "poll_enabled": true,
+        "poll_interval": 300
+    }
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        
+        sftp_config = SFTPConfigService.create_sftp_config(
+            partner_id=partner_id,
+            config_data=data,
+            created_by=request.user
+        )
+        
+        config_data = SFTPConfigService.get_sftp_config(partner_id)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'SFTP configuration created successfully',
+            'config': config_data
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["PUT"])
+def admin_partner_sftp_config_update(request, partner_id):
+    """
+    Update SFTP configuration for a partner
+    PUT /api/v1/admin/partners/<id>/sftp-config
+    Body: (any fields from create endpoint)
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        
+        sftp_config = SFTPConfigService.update_sftp_config(
+            partner_id=partner_id,
+            config_data=data,
+            updated_by=request.user
+        )
+        
+        config_data = SFTPConfigService.get_sftp_config(partner_id)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'SFTP configuration updated successfully',
+            'config': config_data
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_partner_sftp_config_delete(request, partner_id):
+    """
+    Delete SFTP configuration for a partner
+    DELETE /api/v1/admin/partners/<id>/sftp-config
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        SFTPConfigService.delete_sftp_config(
+            partner_id=partner_id,
+            deleted_by=request.user
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'SFTP configuration deleted successfully'
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_partner_sftp_test_connection(request, partner_id):
+    """
+    Test SFTP connection for a partner
+    POST /api/v1/admin/partners/<id>/sftp-config/test
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        result = SFTPConfigService.test_connection(
+            partner_id=partner_id,
+            test_by=request.user
+        )
+        
+        return JsonResponse(result)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_generate_sftp_credentials(request):
+    """
+    Generate secure SFTP credentials
+    POST /api/v1/admin/sftp/generate-credentials
+    Body: {"username_prefix": "PARTNER001"}  // optional
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        data = json.loads(request.body) if request.body else {}
+        username_prefix = data.get('username_prefix')
+        
+        credentials = SFTPConfigService.generate_credentials(username_prefix)
+        
+        # Log activity
+        ActivityLogger.log_admin(
+            request.user,
+            'sftp_credentials_generated',
+            details={'username': credentials['username']},
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'credentials': credentials
+        })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

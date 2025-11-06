@@ -31,4 +31,12 @@ urlpatterns = [
     # Activity logs
     path('activity-logs', admin_views.admin_activity_logs, name='admin_activity_logs'),
     path('activity-logs/export', admin_views.admin_activity_logs_export, name='admin_activity_logs_export'),
+    
+    # SFTP Configuration Management
+    path('partners/<uuid:partner_id>/sftp-config', admin_views.admin_partner_sftp_config, name='admin_partner_sftp_config'),
+    path('partners/<uuid:partner_id>/sftp-config', admin_views.admin_partner_sftp_config_create, name='admin_partner_sftp_config_create'),
+    path('partners/<uuid:partner_id>/sftp-config', admin_views.admin_partner_sftp_config_update, name='admin_partner_sftp_config_update'),
+    path('partners/<uuid:partner_id>/sftp-config', admin_views.admin_partner_sftp_config_delete, name='admin_partner_sftp_config_delete'),
+    path('partners/<uuid:partner_id>/sftp-config/test', admin_views.admin_partner_sftp_test_connection, name='admin_partner_sftp_test_connection'),
+    path('sftp/generate-credentials', admin_views.admin_generate_sftp_credentials, name='admin_generate_sftp_credentials'),
 ]
