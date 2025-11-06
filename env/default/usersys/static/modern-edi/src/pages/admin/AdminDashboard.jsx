@@ -24,9 +24,10 @@ export default function AdminDashboard() {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch('/modern-edi/api/v1/admin/dashboard/metrics');
-      const data = await response.json();
-      setMetrics(data.metrics);
+      const data = await fetch('/modern-edi/api/v1/admin/dashboard/metrics', {
+        credentials: 'include'
+      }).then(r => r.json());
+      setMetrics(data);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch metrics:', error);
