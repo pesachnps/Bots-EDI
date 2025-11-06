@@ -16,9 +16,10 @@ from django.utils import timezone
 from .analytics_service import AnalyticsService
 from .activity_logger import ActivityLogger
 from .modern_edi_models import EDITransaction
-from .partner_models import Partner
+from .partner_models import Partner, ScheduledReport
 from .file_manager import FileManager
 from .transaction_manager import TransactionManager
+from .report_service import ReportScheduler
 
 
 # Dashboard Endpoints
@@ -596,5 +597,237 @@ def partner_settings_test_connection(request):
             'success': True,
             'results': results
         })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# Scheduled Reports Endpoints
+
+@require_http_methods(["GET"])
+def partner_scheduled_reports_list(request):
+    """
+    List partner's scheduled reports
+    GET /api/v1/partner-portal/scheduled-reports
+    """
+    if not hasattr(request, 'partner_user'):
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        reports = ScheduledReport.objects.filter(
+            partner=request.partner
+        ).order_by('-created_at')
+        
+        reports_data = []
+        for report in reports:
+            reports_data.append({
+                'id': report.id,
+                'name': report.name,
+                'description': report.description,
+                'report_type': report.report_type,
+                'report_type_display': report.get_report_type_display(),
+                'format': report.format,
+                'format_display': report.get_format_display(),
+                'frequency': report.frequency,
+                'frequency_display': report.get_frequency_display(),
+                'recipients': report.recipients,
+                'is_active': report.is_active,
+                'last_run': report.last_run.isoformat() if report.last_run else None,
+                'last_run_status': report.last_run_status,
+                'next_run': report.next_run.isoformat() if report.next_run else None,
+                'run_count': report.run_count,
+                'date_range_days': report.date_range_days,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'reports': reports_data
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def partner_scheduled_report_create(request):
+    """
+    Create a scheduled report
+    POST /api/v1/partner-portal/scheduled-reports
+    """
+    if not hasattr(request, 'partner_user'):
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        data = json.loads(request.body)
+        
+        report = ScheduledReport.objects.create(
+            partner=request.partner,
+            name=data['name'],
+            description=data.get('description', ''),
+            report_type=data['report_type'],
+            format=data.get('format', 'csv'),
+            recipients=data.get('recipients', []),
+            frequency=data.get('frequency', 'weekly'),
+            day_of_week=data.get('day_of_week'),
+            day_of_month=data.get('day_of_month'),
+            time_of_day=data.get('time_of_day', '09:00:00'),
+            timezone=data.get('timezone', 'UTC'),
+            filters=data.get('filters', {}),
+            date_range_days=data.get('date_range_days', 30),
+            is_active=data.get('is_active', True)
+        )
+        
+        # Calculate next run
+        report.calculate_next_run()
+        report.save()
+        
+        # Log activity
+        ActivityLogger.log_partner(
+            request.partner_user,
+            'scheduled_report_created',
+            details={'report_name': report.name},
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report created successfully',
+            'report_id': report.id,
+            'next_run': report.next_run.isoformat() if report.next_run else None
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["PUT"])
+def partner_scheduled_report_update(request, report_id):
+    """
+    Update a scheduled report
+    PUT /api/v1/partner-portal/scheduled-reports/<id>
+    """
+    if not hasattr(request, 'partner_user'):
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        report = ScheduledReport.objects.get(
+            id=report_id,
+            partner=request.partner
+        )
+        data = json.loads(request.body)
+        
+        # Update fields
+        if 'name' in data:
+            report.name = data['name']
+        if 'description' in data:
+            report.description = data['description']
+        if 'format' in data:
+            report.format = data['format']
+        if 'recipients' in data:
+            report.recipients = data['recipients']
+        if 'frequency' in data:
+            report.frequency = data['frequency']
+        if 'day_of_week' in data:
+            report.day_of_week = data['day_of_week']
+        if 'day_of_month' in data:
+            report.day_of_month = data['day_of_month']
+        if 'time_of_day' in data:
+            report.time_of_day = data['time_of_day']
+        if 'timezone' in data:
+            report.timezone = data['timezone']
+        if 'date_range_days' in data:
+            report.date_range_days = data['date_range_days']
+        if 'is_active' in data:
+            report.is_active = data['is_active']
+        
+        # Recalculate next run if schedule changed
+        if any(k in data for k in ['frequency', 'day_of_week', 'day_of_month', 'time_of_day', 'timezone']):
+            report.calculate_next_run()
+        
+        report.save()
+        
+        # Log activity
+        ActivityLogger.log_partner(
+            request.partner_user,
+            'scheduled_report_updated',
+            details={'report_name': report.name},
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report updated successfully',
+            'next_run': report.next_run.isoformat() if report.next_run else None
+        })
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def partner_scheduled_report_delete(request, report_id):
+    """
+    Delete a scheduled report
+    DELETE /api/v1/partner-portal/scheduled-reports/<id>
+    """
+    if not hasattr(request, 'partner_user'):
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        report = ScheduledReport.objects.get(
+            id=report_id,
+            partner=request.partner
+        )
+        report_name = report.name
+        report.delete()
+        
+        # Log activity
+        ActivityLogger.log_partner(
+            request.partner_user,
+            'scheduled_report_deleted',
+            details={'report_name': report_name},
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report deleted successfully'
+        })
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["POST"])
+def partner_scheduled_report_run_now(request, report_id):
+    """
+    Run a scheduled report immediately
+    POST /api/v1/partner-portal/scheduled-reports/<id>/run
+    """
+    if not hasattr(request, 'partner_user'):
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+    
+    try:
+        report = ScheduledReport.objects.get(
+            id=report_id,
+            partner=request.partner
+        )
+        
+        # Execute report
+        result = ReportScheduler.execute_report(report.id, send_email=True)
+        
+        # Log activity
+        ActivityLogger.log_partner(
+            request.partner_user,
+            'scheduled_report_run_manually',
+            details={
+                'report_name': report.name,
+                'success': result.get('success')
+            },
+            request=request
+        )
+        
+        return JsonResponse(result)
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

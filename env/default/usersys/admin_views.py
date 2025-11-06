@@ -14,8 +14,9 @@ from django.db.models import Q
 from .analytics_service import AnalyticsService
 from .user_manager import UserManager
 from .activity_logger import ActivityLogger, log_activity
-from .partner_models import Partner, PartnerUser, ActivityLog
+from .partner_models import Partner, PartnerUser, ActivityLog, ScheduledReport
 from .sftp_config_service import SFTPConfigService
+from .report_service import ReportScheduler
 
 
 # Dashboard Overview Endpoints
@@ -791,5 +792,281 @@ def admin_generate_sftp_credentials(request):
             'success': True,
             'credentials': credentials
         })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# Scheduled Reports Management Endpoints
+
+@require_http_methods(["GET"])
+def admin_scheduled_reports_list(request):
+    """
+    List all scheduled reports with filtering
+    GET /api/v1/admin/scheduled-reports?partner_id=&report_type=&is_active=
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        partner_id = request.GET.get('partner_id')
+        report_type = request.GET.get('report_type')
+        is_active = request.GET.get('is_active')
+        
+        reports = ScheduledReport.objects.select_related('partner').all()
+        
+        if partner_id:
+            reports = reports.filter(partner_id=partner_id)
+        if report_type:
+            reports = reports.filter(report_type=report_type)
+        if is_active is not None:
+            reports = reports.filter(is_active=is_active.lower() == 'true')
+        
+        reports = reports.order_by('-created_at')
+        
+        reports_data = []
+        for report in reports:
+            reports_data.append({
+                'id': report.id,
+                'partner_id': str(report.partner.id),
+                'partner_name': report.partner.name,
+                'name': report.name,
+                'description': report.description,
+                'report_type': report.report_type,
+                'format': report.format,
+                'frequency': report.frequency,
+                'recipients': report.recipients,
+                'is_active': report.is_active,
+                'last_run': report.last_run.isoformat() if report.last_run else None,
+                'last_run_status': report.last_run_status,
+                'next_run': report.next_run.isoformat() if report.next_run else None,
+                'run_count': report.run_count,
+                'created_at': report.created_at.isoformat(),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'reports': reports_data,
+            'count': len(reports_data)
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_scheduled_report_create(request):
+    """
+    Create a new scheduled report
+    POST /api/v1/admin/scheduled-reports
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        
+        report = ScheduledReport.objects.create(
+            partner_id=data['partner_id'],
+            name=data['name'],
+            description=data.get('description', ''),
+            report_type=data['report_type'],
+            format=data.get('format', 'csv'),
+            recipients=data.get('recipients', []),
+            frequency=data.get('frequency', 'weekly'),
+            day_of_week=data.get('day_of_week'),
+            day_of_month=data.get('day_of_month'),
+            time_of_day=data.get('time_of_day', '09:00:00'),
+            timezone=data.get('timezone', 'UTC'),
+            filters=data.get('filters', {}),
+            date_range_days=data.get('date_range_days', 30),
+            is_active=data.get('is_active', True),
+            created_by=request.user
+        )
+        
+        # Calculate next run
+        report.calculate_next_run()
+        report.save()
+        
+        # Log activity
+        ActivityLogger.log_admin(
+            request.user,
+            'scheduled_report_created',
+            details={
+                'report_id': report.id,
+                'report_name': report.name,
+                'partner': report.partner.name
+            },
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report created successfully',
+            'report_id': report.id,
+            'next_run': report.next_run.isoformat() if report.next_run else None
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["PUT"])
+def admin_scheduled_report_update(request, report_id):
+    """
+    Update a scheduled report
+    PUT /api/v1/admin/scheduled-reports/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        report = ScheduledReport.objects.get(id=report_id)
+        data = json.loads(request.body)
+        
+        # Update fields
+        if 'name' in data:
+            report.name = data['name']
+        if 'description' in data:
+            report.description = data['description']
+        if 'report_type' in data:
+            report.report_type = data['report_type']
+        if 'format' in data:
+            report.format = data['format']
+        if 'recipients' in data:
+            report.recipients = data['recipients']
+        if 'frequency' in data:
+            report.frequency = data['frequency']
+        if 'day_of_week' in data:
+            report.day_of_week = data['day_of_week']
+        if 'day_of_month' in data:
+            report.day_of_month = data['day_of_month']
+        if 'time_of_day' in data:
+            report.time_of_day = data['time_of_day']
+        if 'timezone' in data:
+            report.timezone = data['timezone']
+        if 'filters' in data:
+            report.filters = data['filters']
+        if 'date_range_days' in data:
+            report.date_range_days = data['date_range_days']
+        if 'is_active' in data:
+            report.is_active = data['is_active']
+        
+        # Recalculate next run if schedule changed
+        if any(k in data for k in ['frequency', 'day_of_week', 'day_of_month', 'time_of_day', 'timezone']):
+            report.calculate_next_run()
+        
+        report.save()
+        
+        # Log activity
+        ActivityLogger.log_admin(
+            request.user,
+            'scheduled_report_updated',
+            details={
+                'report_id': report.id,
+                'report_name': report.name,
+                'updated_fields': list(data.keys())
+            },
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report updated successfully',
+            'next_run': report.next_run.isoformat() if report.next_run else None
+        })
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_scheduled_report_delete(request, report_id):
+    """
+    Delete a scheduled report
+    DELETE /api/v1/admin/scheduled-reports/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        report = ScheduledReport.objects.get(id=report_id)
+        report_name = report.name
+        partner_name = report.partner.name
+        
+        report.delete()
+        
+        # Log activity
+        ActivityLogger.log_admin(
+            request.user,
+            'scheduled_report_deleted',
+            details={
+                'report_id': report_id,
+                'report_name': report_name,
+                'partner': partner_name
+            },
+            request=request
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Scheduled report deleted successfully'
+        })
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_scheduled_report_run_now(request, report_id):
+    """
+    Execute a scheduled report immediately
+    POST /api/v1/admin/scheduled-reports/<id>/run
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        report = ScheduledReport.objects.get(id=report_id)
+        
+        # Execute report
+        result = ReportScheduler.execute_report(report.id, send_email=True)
+        
+        # Log activity
+        ActivityLogger.log_admin(
+            request.user,
+            'scheduled_report_run_manually',
+            details={
+                'report_id': report.id,
+                'report_name': report.name,
+                'success': result.get('success')
+            },
+            request=request
+        )
+        
+        return JsonResponse(result)
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_scheduled_report_preview(request, report_id):
+    """
+    Preview a scheduled report (generate but don't email)
+    POST /api/v1/admin/scheduled-reports/<id>/preview
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        report = ScheduledReport.objects.get(id=report_id)
+        
+        # Execute report without sending email
+        result = ReportScheduler.execute_report(report.id, send_email=False)
+        
+        return JsonResponse(result)
+    except ScheduledReport.DoesNotExist:
+        return JsonResponse({'error': 'Report not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

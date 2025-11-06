@@ -39,4 +39,12 @@ urlpatterns = [
     path('partners/<uuid:partner_id>/sftp-config', admin_views.admin_partner_sftp_config_delete, name='admin_partner_sftp_config_delete'),
     path('partners/<uuid:partner_id>/sftp-config/test', admin_views.admin_partner_sftp_test_connection, name='admin_partner_sftp_test_connection'),
     path('sftp/generate-credentials', admin_views.admin_generate_sftp_credentials, name='admin_generate_sftp_credentials'),
+    
+    # Scheduled Reports Management
+    path('scheduled-reports', admin_views.admin_scheduled_reports_list, name='admin_scheduled_reports_list'),
+    path('scheduled-reports', admin_views.admin_scheduled_report_create, name='admin_scheduled_report_create'),
+    path('scheduled-reports/<int:report_id>', admin_views.admin_scheduled_report_update, name='admin_scheduled_report_update'),
+    path('scheduled-reports/<int:report_id>', admin_views.admin_scheduled_report_delete, name='admin_scheduled_report_delete'),
+    path('scheduled-reports/<int:report_id>/run', admin_views.admin_scheduled_report_run_now, name='admin_scheduled_report_run_now'),
+    path('scheduled-reports/<int:report_id>/preview', admin_views.admin_scheduled_report_preview, name='admin_scheduled_report_preview'),
 ]
