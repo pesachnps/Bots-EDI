@@ -71,6 +71,38 @@ POST /api/v1/admin/scheduled-reports
 
 ## 🚀 Quick Start
 
+### Initial Setup
+
+**IMPORTANT:** Before using the system, you must initialize the database and create admin users.
+
+#### Step 1: Create Bots EDI Tables
+```bash
+cd C:\Users\USER\Projects\bots
+python create_missing_tables.py
+```
+
+This creates the required Bots EDI tables:
+- `ta` - Main transaction table
+- `uniek` - Unique counter values
+- `persist` - Persistent data storage
+- `mutex` - Locking mechanism
+
+#### Step 2: Create Admin Users
+```bash
+python create_admin.py
+```
+
+This creates two admin accounts:
+- `edi_admin` / `Bots@2025!EDI` (primary account)
+- `bots` / `bots` (development account)
+
+#### Step 3: Add Bots Scripts to PATH (Windows)
+```powershell
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\USER\AppData\Roaming\Python\Python313\Scripts", "User")
+```
+
+Replace `USER` with your Windows username. This allows the web interface to run `bots-engine.exe`.
+
 ### Web Interface
 Access the Bots web interface at: **http://localhost:8080**
 

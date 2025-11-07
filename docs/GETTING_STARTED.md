@@ -57,12 +57,15 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your settings
 
-# 5. Initialize database
-python scripts/init_database.py
+# 5. Initialize database tables
+python create_missing_tables.py
 
-# 6. Create admin user
-cd env/default
-python manage_users.py create admin YourPassword123!
+# 6. Create admin users
+python create_admin.py
+
+# 7. Add bots-engine to PATH (Windows only)
+# Replace YOUR_USERNAME with your actual Windows username
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\Users\YOUR_USERNAME\AppData\Roaming\Python\Python313\Scripts", "User")
 ```
 
 ## First Steps After Installation
