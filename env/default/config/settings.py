@@ -20,8 +20,9 @@ config = BotsConfig()
 config.read(os.path.join(BOTS_CONFIG_DIR, 'bots.ini'))
 BOTSSYS = os.environ.get('BOTSSYS_DIR') or config.get('directories', 'botssys', 'botssys')
 if os.path.sep not in BOTSSYS:
-    # Set absolute botssys path
-    BOTSSYS = os.path.join(BOTS_PATH, BOTSSYS)
+    # Set absolute botssys path relative to config directory (not bots package)
+    # Go up two levels from config dir to get to env/default, then add botssys
+    BOTSSYS = os.path.join(os.path.dirname(os.path.dirname(BOTS_CONFIG_DIR)), BOTSSYS)
 
 HOSTNAME = platform.node()
 

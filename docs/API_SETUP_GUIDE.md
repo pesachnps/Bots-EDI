@@ -18,7 +18,7 @@ Complete installation and configuration guide for the Bots EDI REST API system.
 Ensure all API files are in place:
 
 ```
-C:\Users\USER\.bots\env\default\usersys\
+C:\Users\USER\Projects\bots\env\default\usersys\
 ├── api_models.py          ✅ API models
 ├── api_auth.py            ✅ Authentication
 ├── api_views.py           ✅ API endpoints
@@ -31,7 +31,7 @@ C:\Users\USER\.bots\env\default\usersys\
 
 Add the API app to your Django settings:
 
-**Edit:** `C:\Users\USER\.bots\env\default\config\settings.py`
+**Edit:** `C:\Users\USER\Projects\bots\env\default\config\settings.py`
 
 Add to `INSTALLED_APPS`:
 
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 
 Update the main URL configuration to include API routes.
 
-**Edit:** `C:\Users\USER\.bots\env\default\config\urls.py` (or create if it doesn't exist)
+**Edit:** `C:\Users\USER\Projects\bots\env\default\config\urls.py` (or create if it doesn't exist)
 
 ```python
 from django.contrib import admin
@@ -72,7 +72,7 @@ If Bots uses its own URL configuration, you may need to edit the Bots package UR
 Create database tables for API models:
 
 ```bash
-cd C:\Users\USER\.bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python -c "import bots.botsinit; bots.botsinit.generalinit(); import os; os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'; import django; django.setup(); from django.core.management import execute_from_command_line; execute_from_command_line(['manage.py', 'makemigrations', 'usersys'])"
 
 python -c "import bots.botsinit; bots.botsinit.generalinit(); import os; os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'; import django; django.setup(); from django.core.management import execute_from_command_line; execute_from_command_line(['manage.py', 'migrate'])"
@@ -83,7 +83,7 @@ python -c "import bots.botsinit; bots.botsinit.generalinit(); import os; os.envi
 Create default API permissions:
 
 ```bash
-cd C:\Users\USER\.bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python usersys\api_management.py init_permissions
 ```
 

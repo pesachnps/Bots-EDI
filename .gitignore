@@ -67,4 +67,7 @@ docs/_build/
 *.bak
 *.orig
 
+# WARP AI Assistant
+WARP.md
+
 .kiro/
