@@ -103,6 +103,20 @@ This creates two admin accounts:
 
 Replace `USER` with your Windows username. This allows the web interface to run `bots-engine.exe`.
 
+#### Step 4: Configure Email Notifications (Optional)
+```bash
+# Copy .env.example to .env
+cp .env.example .env
+
+# Edit .env and configure email settings:
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+EMAIL_RECIPIENT=recipient@example.com
+```
+
+**For Gmail**, generate an App Password at: https://myaccount.google.com/apppasswords  
+**See** `docs/EMAIL_SETUP.md` for detailed configuration instructions.
+
 ### Web Interface
 Access the Bots web interface at: **http://localhost:8080**
 
