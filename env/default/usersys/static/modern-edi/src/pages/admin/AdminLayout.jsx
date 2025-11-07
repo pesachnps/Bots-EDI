@@ -17,12 +17,12 @@ export default function AdminLayout() {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/modern-edi/admin', icon: HomeIcon },
-    { name: 'Partners', href: '/modern-edi/admin/partners', icon: UsersIcon },
-    { name: 'Users', href: '/modern-edi/admin/users', icon: UsersIcon },
-    { name: 'Permissions', href: '/modern-edi/admin/permissions', icon: ShieldCheckIcon },
-    { name: 'Analytics', href: '/modern-edi/admin/analytics', icon: ChartBarIcon },
-    { name: 'Activity Logs', href: '/modern-edi/admin/activity-logs', icon: ClipboardDocumentListIcon },
+    { name: 'Dashboard', href: '/admin', icon: HomeIcon },
+    { name: 'Partners', href: '/admin/partners', icon: UsersIcon },
+    { name: 'Users', href: '/admin/users', icon: UsersIcon },
+    { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
+    { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
+    { name: 'Activity Logs', href: '/admin/activity-logs', icon: ClipboardDocumentListIcon },
   ];
 
   const handleLogout = () => {

@@ -49,14 +49,14 @@ export default function AdminDashboard() {
       value: metrics?.total_partners || 0,
       icon: UsersIcon,
       color: 'bg-blue-500',
-      link: '/modern-edi/admin/partners',
+      link: '/admin/partners',
     },
     {
       name: 'Total Transactions',
       value: metrics?.total_transactions || 0,
       icon: DocumentTextIcon,
       color: 'bg-green-500',
-      link: '/modern-edi/admin/analytics',
+      link: '/admin/analytics',
     },
     {
       name: 'Success Rate',
