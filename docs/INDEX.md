@@ -315,7 +315,6 @@ Recommended reading order for new users:
 
 ## 📚 External Resources
 
-- [Bots EDI Documentation](https://bots.readthedocs.io/)
 - [Django Documentation](https://docs.djangoproject.com/)
 - [Python Documentation](https://docs.python.org/)
 - [EDI Basics](https://www.edibasics.com/)

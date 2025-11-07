@@ -422,9 +422,6 @@ This project successfully completed all three requested options for creating X12
 - X12_GRAMMARS_PROJECT_SUMMARY.md - This file
 - create_skeleton_grammars.ps1 - Automation script
 
-**Bots Framework Documentation:**
-- http://bots.readthedocs.io/
-- Official Bots EDI framework documentation
 
 **For Questions:**
 - Refer to X12_GRAMMAR_CREATION_GUIDE.md first

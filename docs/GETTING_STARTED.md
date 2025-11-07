@@ -279,7 +279,6 @@ python scripts/init_database.py
 - **QUICK_REFERENCE.md** - Command cheat sheet
 
 ### External Resources
-- [Bots EDI Documentation](https://bots.readthedocs.io/)
 - [Django Documentation](https://docs.djangoproject.com/)
 - [EDI Basics](https://www.edibasics.com/)
 

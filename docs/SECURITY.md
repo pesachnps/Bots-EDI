@@ -320,7 +320,6 @@ Consult with compliance officers for specific requirements.
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Django Security](https://docs.djangoproject.com/en/stable/topics/security/)
-- [Bots EDI Documentation](https://bots.readthedocs.io/)
 - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks/)
 
 ## Version History

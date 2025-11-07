@@ -348,7 +348,6 @@ chmod +x scripts/*.sh
 - **Deployment:** DEPLOYMENT.md
 - **Contributing:** CONTRIBUTING.md
 - **Issues:** GitHub Issues
-- **Bots Docs:** https://bots.readthedocs.io/
 
 ## Quick Links
 

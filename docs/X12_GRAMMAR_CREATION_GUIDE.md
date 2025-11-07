@@ -774,7 +774,6 @@ from .records004010 import recorddefs
 ### Learning
 - [EDI Academy](https://ediacademy.com) - EDI training
 - [X12Parser.com](https://www.x12parser.com) - Free segment reference
-- [Bots Documentation](http://bots.readthedocs.io/) - Bots framework docs
 
 ### Tools
 - [EDI Validator](https://www.edival idator.com) - Online validation

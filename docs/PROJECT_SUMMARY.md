@@ -236,7 +236,7 @@ scripts\backup.bat
 
 - **Issues**: GitHub Issues
 - **Documentation**: Project wiki
-- **Bots EDI**: https://bots.readthedocs.io/
+
 
 ## License
 
