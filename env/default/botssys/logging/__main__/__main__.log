@@ -1,5 +1,635 @@
-2025.11.05 15:36:02 STARTINFO [__main__] Starting ...
-2025.11.05 15:36:03 STARTINFO [__main__] configdir: "C:\Users\PGelfand\.bots\env\default\config".
-2025.11.05 15:36:03 STARTINFO [__main__] using plain http (no ssl).
-2025.11.05 15:36:03 STARTINFO [__main__] Serving at port: "8080".
-2025.11.05 16:24:38 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".
+2025.11.07 10:53:16 STARTINFO [__main__] Starting ...
+2025.11.07 10:57:36 STARTINFO [__main__] Starting ...
+2025.11.07 10:58:20 STARTINFO [__main__] configdir: "C:\Users\PGelfand\Projects\bots\env\default\config".
+2025.11.07 10:58:20 STARTINFO [__main__] using plain http (no ssl).
+2025.11.07 10:58:20 STARTINFO [__main__] Serving at port: "8080".
+2025.11.07 11:17:06 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107111706.zip".
+2025.11.07 11:17:11 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107111711.zip".
+2025.11.07 11:17:33 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107111706.zip" is written successful.
+2025.11.07 11:17:37 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107111711.zip" is written successful.
+2025.11.07 11:17:39 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: uniek
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\admin.py", line 160, in changelist_view
+    return super().changelist_view(request, extra_context=extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 146, in __init__
+    self.get_results(request)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 313, in get_results
+    result_count = paginator.count
+                   ^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: uniek
+"
+2025.11.07 11:17:44 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: uniek
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\admin.py", line 160, in changelist_view
+    return super().changelist_view(request, extra_context=extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 146, in __init__
+    self.get_results(request)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 313, in get_results
+    result_count = paginator.count
+                   ^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: uniek
+"
+2025.11.07 11:17:51 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: uniek
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\admin.py", line 160, in changelist_view
+    return super().changelist_view(request, extra_context=extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 146, in __init__
+    self.get_results(request)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 313, in get_results
+    result_count = paginator.count
+                   ^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: uniek
+"
+2025.11.07 11:18:04 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: uniek
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 719, in wrapper
+    return self.admin_site.admin_view(view)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\views\decorators\cache.py", line 80, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\sites.py", line 246, in inner
+    return view(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\admin.py", line 160, in changelist_view
+    return super().changelist_view(request, extra_context=extra_context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 48, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 2024, in changelist_view
+    cl = self.get_changelist_instance(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\options.py", line 867, in get_changelist_instance
+    return ChangeList(
+        request,
+    ...<12 lines>...
+        self.search_help_text,
+    )
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 146, in __init__
+    self.get_results(request)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\admin\views\main.py", line 313, in get_results
+    result_count = paginator.count
+                   ^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: uniek
+"
+2025.11.07 11:20:19 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107112019.zip".
+2025.11.07 11:20:21 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107112021.zip".
+2025.11.07 11:20:28 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--new']"
+2025.11.07 11:20:28 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:20:31 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--cleanup']"
+2025.11.07 11:20:31 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:20:46 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107112019.zip" is written successful.
+2025.11.07 11:20:48 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107112021.zip" is written successful.
+2025.11.07 11:21:57 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: ta
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\views.py", line 641, in document
+    context['queryset'] = pquery = viewlib.filterquery(query, cleaned_data, context=context)
+                                   ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\viewlib.py", line 557, in filterquery
+    return paginator.page(page)
+           ~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: ta
+"
+2025.11.07 11:22:55 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: ta
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\views.py", line 529, in outgoing
+    context['queryset'] = viewlib.filterquery(query, cleaned_data, context=context)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\viewlib.py", line 557, in filterquery
+    return paginator.page(page)
+           ~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: ta
+"
+2025.11.07 11:23:04 ERROR     [__main__] Ran into server error: "Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: ta
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\contrib\auth\decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\views.py", line 529, in outgoing
+    context['queryset'] = viewlib.filterquery(query, cleaned_data, context=context)
+                          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\viewlib.py", line 557, in filterquery
+    return paginator.page(page)
+           ~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: ta
+"
+2025.11.07 11:24:59 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--cleanup']"
+2025.11.07 11:24:59 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:25:04 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--automaticretrycommunication']"
+2025.11.07 11:25:04 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:25:09 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--cleanup']"
+2025.11.07 11:25:09 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:25:11 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--new']"
+2025.11.07 11:25:11 ERROR     [__main__] Errors while trying to run bots-engine: "[WinError 2] The system cannot find the file specified".
+2025.11.07 11:30:12 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107113012.zip".
+2025.11.07 11:30:18 INFO      [__main__] Start writing configuration index file "C:\Users\PGelfand\Projects\bots\env\default\usersys\index.json".
+2025.11.07 11:30:18 INFO      [__main__] Bots index file written: C:\Users\PGelfand\Projects\bots\env\default\usersys\index.json
+2025.11.07 11:30:28 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107113012.zip" is written successful.
+2025.11.07 11:30:28 INFO      [__main__] Configuration index file is OK.
+2025.11.07 11:30:28 INFO      [__main__] Start writing to database.
+2025.11.07 11:30:28 WARNING   [__main__] No plugin found in index.
+2025.11.07 11:30:30 INFO      [__main__] Start writing backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107113030.zip".
+2025.11.07 11:30:43 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".
+2025.11.07 11:30:47 DONE      [__main__] Backup plugin "C:\Users\PGelfand\Projects\bots\env\default\botssys\backup\backup_plugin_20251107113030.zip" is written successful.
+2025.11.07 11:30:47 INFO      [__main__] Configuration index file is OK.
+2025.11.07 11:30:47 INFO      [__main__] Start writing to database.
+2025.11.07 11:30:47 WARNING   [__main__] No plugin found in index.
+2025.11.07 11:49:11 STARTINFO [__main__] Starting ...
+2025.11.07 11:49:15 STARTINFO [__main__] configdir: "C:\Users\PGelfand\Projects\bots\env\default\config".
+2025.11.07 11:49:15 STARTINFO [__main__] using plain http (no ssl).
+2025.11.07 11:49:15 STARTINFO [__main__] Serving at port: "8080".
+2025.11.07 11:51:53 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--cleanup']"
+2025.11.07 11:52:01 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--new']"
+2025.11.07 11:52:05 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--rereceive']"
+2025.11.07 11:52:12 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".
+2025.11.07 12:02:14 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--new']"
+2025.11.07 12:02:18 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--automaticretrycommunication']"
+2025.11.07 12:02:24 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--cleanup']"
+2025.11.07 12:02:27 INFO      [__main__] Run bots-engine with parameters: "['bots-engine', '-cC:\\Users\\PGelfand\\Projects\\bots\\env\\default\\config', '--rereceive']"
+2025.11.07 12:02:33 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".
+2025.11.07 12:02:40 INFO      [__main__] Trying to send test mail, but in bots.ini, section [settings], "sendreportiferror" is not "True".

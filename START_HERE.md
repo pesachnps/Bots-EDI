@@ -6,7 +6,7 @@
 
 ```powershell
 # Open PowerShell or Command Prompt
-cd C:\Users\PGelfand\Projects\bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 
 # Start the Bots webserver
 python -c "import sys; sys.path.insert(0, '.'); import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
@@ -18,7 +18,7 @@ python -c "import sys; sys.path.insert(0, '.'); import bots.botsinit; bots.botsi
 
 ```powershell
 # Open a NEW PowerShell or Command Prompt
-cd C:\Users\PGelfand\Projects\bots\env\default\usersys\static\modern-edi
+cd C:\Users\USER\Projects\bots\env\default\usersys\static\modern-edi
 
 # Install dependencies (first time only)
 npm install
@@ -65,14 +65,14 @@ Once you're at `http://localhost:3000/admin`, you can access:
 ### Backend Won't Start
 If you get path errors, try:
 ```powershell
-cd C:\Users\PGelfand\Projects\bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python -c "import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
 ```
 
 ### Frontend Won't Start
 ```powershell
 # Clear and reinstall
-cd C:\Users\PGelfand\Projects\bots\env\default\usersys\static\modern-edi
+cd C:\Users\USER\Projects\bots\env\default\usersys\static\modern-edi
 Remove-Item -Recurse -Force node_modules
 Remove-Item package-lock.json
 npm install

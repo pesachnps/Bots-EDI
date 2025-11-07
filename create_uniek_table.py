@@ -2,7 +2,7 @@
 """Create the missing uniek table"""
 import sqlite3
 
-DB_PATH = r"C:\Users\PGelfand\Projects\bots\env\botssys\sqlitedb\botsdb"
+DB_PATH = r"C:\Users\USER\Projects\bots\env\botssys\sqlitedb\botsdb"
 
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()

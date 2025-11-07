@@ -76,7 +76,7 @@ This project successfully completed all three requested options for creating X12
 ## File Locations
 
 **Grammar Files:**  
-`C:\Users\PGelfand\Projects\bots\env\default\usersys\grammars\x12\`
+`C:\Users\USER\Projects\bots\env\default\usersys\grammars\x12\`
 
 **Production-Ready:** (5 files)
 - 850004010.py
@@ -93,7 +93,7 @@ This project successfully completed all three requested options for creating X12
 - 945004010.py, 947004010.py
 
 **Documentation:**  
-`C:\Users\PGelfand\Projects\bots\`
+`C:\Users\USER\Projects\bots\`
 - X12_GRAMMAR_CREATION_GUIDE.md
 - X12_GRAMMARS_PROJECT_SUMMARY.md
 - create_skeleton_grammars.ps1
@@ -284,7 +284,7 @@ This project successfully completed all three requested options for creating X12
 
 1. **Syntax Check** all new and skeleton files:
    ```powershell
-   Get-ChildItem C:\Users\PGelfand\Projects\bots\env\default\usersys\grammars\x12\*004010.py | 
+   Get-ChildItem C:\Users\USER\Projects\bots\env\default\usersys\grammars\x12\*004010.py | 
    ForEach-Object { 
        Write-Host "Checking $($_.Name)..."
        python -m py_compile $_.FullName
@@ -415,7 +415,7 @@ This project successfully completed all three requested options for creating X12
 ## Contact & Support
 
 **Project Location:**  
-`C:\Users\PGelfand\Projects\bots\`
+`C:\Users\USER\Projects\bots\`
 
 **Key Documentation:**
 - X12_GRAMMAR_CREATION_GUIDE.md - How-to guide

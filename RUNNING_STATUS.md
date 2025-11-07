@@ -27,7 +27,7 @@ Since the frontend is running, you can access it at:
 You need to start the backend separately. Open a **new terminal** and run:
 
 ```powershell
-cd C:\Users\PGelfand\Projects\bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python -c "import sys; sys.path.insert(0, '.'); import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
 ```
 
@@ -69,7 +69,7 @@ To stop the running frontend server:
 If you need to restart:
 
 ```powershell
-cd C:\Users\PGelfand\Projects\bots\env\default\usersys\static\modern-edi
+cd C:\Users\USER\Projects\bots\env\default\usersys\static\modern-edi
 npm run dev
 ```
 

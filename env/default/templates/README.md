@@ -21,7 +21,7 @@ Django will search for templates in this order:
 ## Adding New Overrides
 
 To override any Bots template:
-1. Copy the template from `C:\Users\PGelfand\AppData\Roaming\Python\Python313\site-packages\bots\templates\`
+1. Copy the template from `C:\Users\USER\AppData\Roaming\Python\Python313\site-packages\bots\templates\`
 2. Paste it into this directory maintaining the same folder structure
 3. Modify as needed
 4. Restart the backend server

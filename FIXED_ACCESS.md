@@ -53,7 +53,7 @@ To see real data, start the backend in a separate terminal.
 ## 🚀 Backend Command
 
 ```powershell
-cd C:\Users\PGelfand\Projects\bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python -c "import sys; sys.path.insert(0, '.'); import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
 ```
 

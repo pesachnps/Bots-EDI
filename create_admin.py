@@ -17,7 +17,7 @@ if not settings.configured:
 # Import Django's password hasher
 from django.contrib.auth.hashers import make_password as django_make_password
 
-DB_PATH = r"C:\Users\PGelfand\Projects\bots\env\botssys\sqlitedb\botsdb"
+DB_PATH = r"C:\Users\USER\Projects\bots\env\botssys\sqlitedb\botsdb"
 
 def create_superuser(username='admin', password='admin123', email='admin@bots.local'):
     """Create superuser in database"""

@@ -33,7 +33,7 @@ Bots EDI can send email notifications when errors occur during EDI processing. T
 
 ## Step 3: Create Environment File
 
-Create a `.env` file in your project root (`C:\Users\PGelfand\Projects\bots\.env`):
+Create a `.env` file in your project root (`C:\Users\USER\Projects\bots\.env`):
 
 ```bash
 # Email Configuration

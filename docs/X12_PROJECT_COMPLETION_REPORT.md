@@ -172,7 +172,7 @@ Successfully completed comprehensive X12 004010 retail transaction set grammar i
 
 ### 1. Validate All Grammars
 ```bash
-cd C:\Users\PGelfand\Projects\bots
+cd C:\Users\USER\Projects\bots
 python validate_grammars.py
 ```
 

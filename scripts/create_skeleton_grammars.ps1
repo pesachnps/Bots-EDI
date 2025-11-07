@@ -1,7 +1,7 @@
 # Script to create skeleton X12 grammar files for retail transaction sets (version 004010)
 # Run this script from the bots project root directory
 
-$grammarsPath = "C:\Users\PGelfand\Projects\bots\env\default\usersys\grammars\x12"
+$grammarsPath = "C:\Users\USER\Projects\bots\env\default\usersys\grammars\x12"
 
 # Define skeleton structures for each transaction set
 $skeletons = @(
