@@ -24,6 +24,7 @@ echo.
 echo Press Ctrl+C to stop the server
 echo.
 
-python -c "import sys; sys.path.insert(0, '.'); import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.start()"
+:: Start webserver using bots-webserver command
+bots-webserver
 
 pause
