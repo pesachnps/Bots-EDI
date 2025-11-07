@@ -2,7 +2,9 @@ Write-Host "Starting Bots EDI Backend Server..." -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-Set-Location C:\Users\USER\Projects\bots\env\default
+$PROJECT_ROOT = $env:PROJECT_ROOT
+if (-not $PROJECT_ROOT) { $PROJECT_ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path }
+Set-Location "$PROJECT_ROOT\env\default"
 
 Write-Host "Checking if port 8080 is available..." -ForegroundColor Yellow
 $port8080 = Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue
@@ -20,4 +22,4 @@ Write-Host ""
 Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Yellow
 Write-Host ""
 
-python -m bots.webserver -cC:\Users\USER\Projects\bots\env\default\config
+python -m bots.webserver -c"$PROJECT_ROOT\env\default\config"

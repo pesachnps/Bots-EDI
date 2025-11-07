@@ -4,6 +4,10 @@ import sqlite3
 import os
 import django
 from django.conf import settings
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure Django settings
 if not settings.configured:
@@ -17,7 +21,9 @@ if not settings.configured:
 # Import Django's password hasher
 from django.contrib.auth.hashers import make_password as django_make_password
 
-DB_PATH = r"C:\Users\USER\Projects\bots\env\botssys\sqlitedb\botsdb"
+# Get project root from environment
+PROJECT_ROOT = os.getenv('PROJECT_ROOT', os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(PROJECT_ROOT, 'env', 'botssys', 'sqlitedb', 'botsdb')
 
 def create_superuser(username='admin', password='admin123', email='admin@bots.local'):
     """Create superuser in database"""

@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 """Create the missing uniek table"""
 import sqlite3
+import os
+from dotenv import load_dotenv
 
-DB_PATH = r"C:\Users\USER\Projects\bots\env\botssys\sqlitedb\botsdb"
+load_dotenv()
+PROJECT_ROOT = os.getenv('PROJECT_ROOT', os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(PROJECT_ROOT, 'env', 'botssys', 'sqlitedb', 'botsdb')
 
 conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
