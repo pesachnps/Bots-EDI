@@ -161,6 +161,10 @@ USE_I18N = True
 # *********path settings*************************
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BOTSSYS, 'static')
+# Additional static files directories for development
+STATICFILES_DIRS = [
+    os.path.join(BOTS_CONFIG_DIR, '..', 'usersys', 'static', 'modern-edi', 'dist'),
+]
 ROOT_URLCONF = 'bots.urls'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/bots/home'
@@ -219,6 +223,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BOTS_PATH, 'templates'),
+            os.path.join(BOTS_CONFIG_DIR, '..', 'usersys', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

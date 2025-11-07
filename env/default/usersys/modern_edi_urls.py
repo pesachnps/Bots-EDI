@@ -8,6 +8,9 @@ from . import modern_edi_views
 app_name = 'modern_edi'
 
 urlpatterns = [
+    # Frontend - React SPA
+    path('', modern_edi_views.serve_modern_edi_app, name='modern_edi_app'),
+    
     # Transaction CRUD endpoints
     path('api/v1/transactions/', modern_edi_views.list_transactions, name='list_transactions'),
     path('api/v1/transactions/<str:folder>/', modern_edi_views.list_transactions_by_folder, name='list_transactions_by_folder'),

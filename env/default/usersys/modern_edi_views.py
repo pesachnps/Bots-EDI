@@ -742,6 +742,19 @@ def validate_transaction(request, transaction_id):
 
 
 @csrf_exempt
+@require_http_methods(["GET"])
+@login_required
+def serve_modern_edi_app(request):
+    """
+    Serve the Modern EDI React SPA
+    
+    GET /modern-edi/
+    """
+    from django.shortcuts import render
+    return render(request, 'modern-edi/index.html')
+
+
+@csrf_exempt
 @require_http_methods(["POST"])
 @login_required
 def process_transaction(request, transaction_id):

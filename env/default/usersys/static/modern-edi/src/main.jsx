@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="/static/modern-edi">
+      <BrowserRouter basename="/modern-edi">
         <App />
       </BrowserRouter>
     </QueryClientProvider>
