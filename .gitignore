@@ -41,6 +41,9 @@ env/*/botssys/infile/*
 env/*/botssys/archive/
 env/*/botssys/outfile/
 
+# Exception: Keep template overrides
+!env/*/templates/
+
 # Environment Variables
 .env
 .env.local
