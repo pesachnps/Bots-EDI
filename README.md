@@ -146,7 +146,7 @@ Access the Bots web interface at: **http://localhost:8080**
 
 ### Directory Structure
 ```
-C:\Users\USER\.bots\env\default\
+C:\Users\USER\Projects\bots\env\default\
 ├── config/
 │   ├── bots.ini          # Main configuration
 │   └── settings.py       # Django settings
@@ -166,7 +166,7 @@ C:\Users\USER\.bots\env\default\
 ### Starting/Stopping Services
 ```bash
 # Start Bots web server
-cd C:\Users\USER\.bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python -c "import bots.botsinit; bots.botsinit.generalinit(); from bots import webserver; webserver.run()"
 
 # The web server runs automatically on http://localhost:8080
@@ -277,7 +277,7 @@ Bots EDI now includes a secure REST API for programmatic access without needing 
 
 ```bash
 # Initialize API permissions
-cd C:\Users\USER\.bots\env\default
+cd C:\Users\USER\Projects\bots\env\default
 python usersys\api_management.py init_permissions
 
 # Create your first API key
@@ -335,9 +335,9 @@ print(response.json())
 
 ## 🎯 Admin Dashboard & Partner Portal (NEW!)
 
-**Status:** Backend Complete ✅ | Frontend Documented 📋
+**Status:** Backend Complete ✅ | Frontend Complete ✅
 
-A comprehensive management system for EDI operations with secure partner access.
+A comprehensive management system for EDI operations with secure partner access built with React, Vite, and Tailwind CSS.
 
 ### Admin Dashboard Features
 - **System Monitoring**: Real-time metrics, transaction volume, success rates
@@ -406,9 +406,11 @@ user = UserManager.create_user(
 ```
 
 ### Access Points
-- **Admin Dashboard**: http://localhost:8080/modern-edi/admin/
-- **Partner Portal**: http://localhost:8080/modern-edi/partner-portal/
-- **API Base**: http://localhost:8080/modern-edi/api/v1/
+- **Admin Dashboard**: http://localhost:8080/static/modern-edi/ (React SPA)
+- **Admin API**: http://localhost:8080/modern-edi/api/v1/admin/
+- **Partner Portal**: http://localhost:8080/static/modern-edi/ (React SPA)
+- **Partner API**: http://localhost:8080/api/v1/partner/
+- **Modern EDI API**: http://localhost:8080/modern-edi/api/v1/
 
 ## 🐳 Docker Support
 
