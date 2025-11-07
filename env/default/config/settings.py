@@ -37,18 +37,22 @@ if env_file.exists():
                 os.environ.setdefault(key.strip(), value.strip())
 
 # *******settings for sending bots error reports via email**********************************
+# Configure email recipients
 MANAGERS = (
     # bots will send error reports to the MANAGERS
-    ('name_manager', 'adress@test.com'),
+    ('EDI Admin', os.environ.get('EMAIL_RECIPIENT', 'your-email@example.com')),
 )
-EMAIL_HOST = 'localhost'    # Default: 'localhost'
-EMAIL_PORT = '25'           # Default: 25
-EMAIL_USE_TLS = False       # Default: False
-EMAIL_HOST_USER = ""        # Default: '' Username to use for the SMTP server defined in EMAIL_HOST.
-EMAIL_HOST_PASSWORD = ""    # Default: '' PASSWORD to use for the SMTP server defined in EMAIL_HOST.
-# If EMAIL_HOST_USER is empty, Django won't attempt authentication.
-SERVER_EMAIL = f"{BOTSENV}@{HOSTNAME}"  # Sender of bots error reports. Default: 'root@localhost'
-# EMAIL_SUBJECT_PREFIX = ''   # This is prepended on email subject.
+
+# Gmail SMTP Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')  # Your Gmail address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')  # Gmail App Password
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', EMAIL_HOST_USER)
+EMAIL_SUBJECT_PREFIX = '[Bots EDI] '
 
 # *********database settings*************************
 # Database configuration from environment variables
