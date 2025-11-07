@@ -5,7 +5,7 @@
 ### ✅ Frontend Dev Server
 **Status**: Running  
 **Process ID**: 9  
-**URL**: http://localhost:3000/static/modern-edi/  
+**URL**: http://localhost:3000/admin/  
 **Command**: `npm run dev`  
 **Location**: `env/default/usersys/static/modern-edi`
 

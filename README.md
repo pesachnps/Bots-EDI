@@ -452,9 +452,9 @@ user = UserManager.create_user(
 ```
 
 ### Access Points
-- **Admin Dashboard**: http://localhost:8080/static/modern-edi/ (React SPA)
+- **Admin Dashboard**: http://localhost:8080/modern-edi/admin/ (React SPA)
 - **Admin API**: http://localhost:8080/modern-edi/api/v1/admin/
-- **Partner Portal**: http://localhost:8080/static/modern-edi/ (React SPA)
+- **Partner Portal**: http://localhost:8080/modern-edi/partner-portal/ (React SPA)
 - **Partner API**: http://localhost:8080/api/v1/partner/
 - **Modern EDI API**: http://localhost:8080/modern-edi/api/v1/
 
