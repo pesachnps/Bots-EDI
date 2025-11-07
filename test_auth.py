@@ -3,16 +3,23 @@
 import os
 import sys
 import django
+from dotenv import load_dotenv
 
-# Set up Django
-sys.path.insert(0, r'C:\Users\USER\Projects\bots\env\default')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+# Set up project paths
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+ENV_DEFAULT = os.path.join(PROJECT_ROOT, 'env', 'default')
 
-# Initialize bots first
-import bots.botsinit
-bots.botsinit.generalinit()
+# Load environment variables
+load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
-# Now setup Django
+# Set environment variables for Django
+os.environ['PROJECT_ROOT'] = PROJECT_ROOT
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+# Add to Python path - this allows Django to find settings
+sys.path.insert(0, ENV_DEFAULT)
+
+# Setup Django
 django.setup()
 
 from django.contrib.auth import authenticate

@@ -4,7 +4,8 @@ echo Starting Bots EDI Backend Server
 echo ========================================
 echo.
 
-cd %USERPROFILE%\Projects\bots\env\default
+:: Get script directory and navigate to env\default
+cd /d "%~dp0env\default"
 
 echo Checking if server is already running on port 8080...
 netstat -ano | findstr :8080 > nul
