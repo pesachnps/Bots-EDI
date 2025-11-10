@@ -23,7 +23,8 @@ from django.contrib.auth.hashers import make_password as django_make_password
 
 # Get project root from environment
 PROJECT_ROOT = os.getenv('PROJECT_ROOT', os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(PROJECT_ROOT, 'env', 'botssys', 'sqlitedb', 'botsdb')
+# Use the actual database location
+DB_PATH = r'C:\Users\PGelfand\.bots\env\default\botssys\sqlitedb\botsdb'
 
 def create_superuser(username='admin', password='admin123', email='admin@bots.local'):
     """Create superuser in database"""
