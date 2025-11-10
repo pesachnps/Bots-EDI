@@ -5,8 +5,17 @@ Routes for admin dashboard API endpoints
 
 from django.urls import path
 from . import admin_views
+from . import admin_auth_views
 
 urlpatterns = [
+    # Admin Authentication
+    path('auth/login', admin_auth_views.admin_login, name='admin_login'),
+    path('auth/logout', admin_auth_views.admin_logout, name='admin_logout'),
+    path('auth/check', admin_auth_views.admin_check_auth, name='admin_check_auth'),
+    path('auth/signup', admin_auth_views.admin_signup, name='admin_signup'),
+    path('auth/request-reset', admin_auth_views.admin_request_password_reset, name='admin_request_reset'),
+    path('auth/reset-password', admin_auth_views.admin_reset_password, name='admin_reset_password'),
+    
     # Dashboard overview
     path('dashboard/metrics', admin_views.admin_dashboard_metrics, name='admin_dashboard_metrics'),
     path('dashboard/charts', admin_views.admin_dashboard_charts, name='admin_dashboard_charts'),

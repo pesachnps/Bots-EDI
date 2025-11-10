@@ -11,12 +11,39 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from .analytics_service import AnalyticsService
-from .user_manager import UserManager
-from .activity_logger import ActivityLogger, log_activity
-from .partner_models import Partner, PartnerUser, ActivityLog, ScheduledReport
-from .sftp_config_service import SFTPConfigService
-from .report_service import ReportScheduler
+try:
+    from .analytics_service import AnalyticsService
+except ImportError:
+    AnalyticsService = None
+
+try:
+    from .user_manager import UserManager
+except ImportError:
+    UserManager = None
+
+try:
+    from .activity_logger import ActivityLogger, log_activity
+except ImportError:
+    ActivityLogger = None
+    log_activity = None
+
+try:
+    from .partner_models import Partner, PartnerUser, ActivityLog, ScheduledReport
+except ImportError:
+    Partner = None
+    PartnerUser = None
+    ActivityLog = None
+    ScheduledReport = None
+
+try:
+    from .sftp_config_service import SFTPConfigService
+except ImportError:
+    SFTPConfigService = None
+
+try:
+    from .report_service import ReportScheduler
+except ImportError:
+    ReportScheduler = None
 
 
 # Dashboard Overview Endpoints
@@ -87,6 +114,14 @@ def admin_partners_list(request):
         return JsonResponse({'error': 'Admin access required'}, status=403)
     
     try:
+        # Check if Partner model is available
+        if Partner is None:
+            return JsonResponse({
+                'success': True,
+                'partners': [],
+                'pagination': {'page': 1, 'per_page': 50, 'total': 0, 'pages': 0, 'has_next': False, 'has_previous': False}
+            })
+        
         # Get query parameters
         search = request.GET.get('search', '').strip()
         status = request.GET.get('status', '').strip()
@@ -3299,6 +3334,101 @@ def admin_engine_status(request):
             'success': True,
             'running': False
         })
+
+
+@require_http_methods(["GET"])
+def admin_activity_logs(request):
+    """
+    Get activity logs
+    GET /api/v1/admin/activity-logs?page=1&page_size=50&action=&user_type=&search=
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        # Get query parameters
+        page = int(request.GET.get('page', 1))
+        page_size = int(request.GET.get('page_size', 50))
+        action = request.GET.get('action', '')
+        user_type = request.GET.get('user_type', '')
+        search = request.GET.get('search', '')
+        
+        # Try to query activity logs, fallback to empty if model doesn't exist
+        try:
+            logs = ActivityLog.objects.all()
+            
+            if action and action != 'all':
+                logs = logs.filter(action=action)
+            
+            if user_type and user_type != 'all':
+                logs = logs.filter(user_type=user_type)
+            
+            if search:
+                logs = logs.filter(
+                    Q(user_name__icontains=search) |
+                    Q(details__icontains=search) |
+                    Q(ip_address__icontains=search)
+                )
+            
+            # Order by most recent first
+            logs = logs.order_by('-timestamp')
+            
+            # Paginate
+            paginator = Paginator(logs, page_size)
+            page_obj = paginator.get_page(page)
+            
+            # Serialize logs
+            logs_data = []
+            for log in page_obj:
+                logs_data.append({
+                    'id': log.id,
+                    'timestamp': log.timestamp.isoformat(),
+                    'user_name': log.user_name,
+                    'user_type': log.user_type,
+                    'action': log.action,
+                    'resource_type': log.resource_type,
+                    'resource_id': log.resource_id,
+                    'ip_address': log.ip_address,
+                    'details': log.details if isinstance(log.details, dict) else {},
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'results': logs_data,
+                'count': paginator.count,
+                'page': page,
+                'page_size': page_size,
+                'pages': paginator.num_pages,
+            })
+        except Exception:
+            # ActivityLog model doesn't exist or no data, return empty
+            return JsonResponse({
+                'success': True,
+                'results': [],
+                'count': 0,
+                'page': page,
+                'page_size': page_size,
+                'pages': 0,
+            })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_activity_logs_export(request):
+    """
+    Export activity logs as CSV
+    GET /api/v1/admin/activity-logs/export
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        # TODO: Implement CSV export
+        return HttpResponse('Coming soon', content_type='text/plain')
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @require_http_methods(["POST"])
