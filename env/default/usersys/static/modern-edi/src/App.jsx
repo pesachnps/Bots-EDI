@@ -9,6 +9,7 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminSignup from './pages/admin/AdminSignup';
 import AdminForgotPassword from './pages/admin/AdminForgotPassword';
+import AdminResetPassword from './pages/admin/AdminResetPassword';
 
 // Admin Dashboard
 import AdminLayout from './pages/admin/AdminLayout';
@@ -59,6 +60,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/signup" element={<AdminSignup />} />
         <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
 
         {/* Admin Dashboard (Protected) */}
         <Route path="/admin" element={
