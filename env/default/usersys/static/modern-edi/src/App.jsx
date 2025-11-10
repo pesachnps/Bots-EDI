@@ -14,6 +14,7 @@ import ActivityLog from './pages/admin/ActivityLog';
 import MailboxFolderView from './pages/admin/MailboxFolderView';
 import RoutesManagement from './pages/admin/Routes';
 import Channels from './pages/admin/Channels';
+import Translations from './pages/admin/Translations';
 
 // Partner Portal
 import PartnerPortalLayout from './pages/partner/PartnerPortalLayout';
@@ -42,6 +43,7 @@ function App() {
         <Route path="partners" element={<PartnerManagement />} />
         <Route path="routes" element={<RoutesManagement />} />
         <Route path="channels" element={<Channels />} />
+        <Route path="translations" element={<Translations />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="permissions" element={<PermissionsManagement />} />
         <Route path="analytics" element={<Analytics />} />

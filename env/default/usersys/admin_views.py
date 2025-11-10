@@ -2024,6 +2024,252 @@ def admin_channel_test(request, channel_id):
         return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
 
 
+# ========================================
+# Translations Management
+# ========================================
+
+def admin_translations_list_or_create(request):
+    if request.method == 'GET':
+        return admin_translations_list(request)
+    elif request.method == 'POST':
+        return admin_translation_create(request)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def admin_translation_detail_update_delete(request, translation_id):
+    if request.method == 'GET':
+        return admin_translation_detail(request, translation_id)
+    elif request.method == 'PUT':
+        return admin_translation_update(request, translation_id)
+    elif request.method == 'DELETE':
+        return admin_translation_delete(request, translation_id)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@require_http_methods(["GET"])
+def admin_translations_list(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import translate
+        
+        search = request.GET.get('search', '').strip()
+        fromeditype = request.GET.get('fromeditype', '').strip()
+        toeditype = request.GET.get('toeditype', '').strip()
+        active = request.GET.get('active', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        translations_qs = translate.objects.select_related('frompartner', 'topartner').all()
+        
+        if search:
+            translations_qs = translations_qs.filter(
+                Q(fromeditype__icontains=search) |
+                Q(toeditype__icontains=search) |
+                Q(tscript__icontains=search) |
+                Q(desc__icontains=search)
+            )
+        
+        if fromeditype:
+            translations_qs = translations_qs.filter(fromeditype=fromeditype)
+        
+        if toeditype:
+            translations_qs = translations_qs.filter(toeditype=toeditype)
+        
+        if active:
+            translations_qs = translations_qs.filter(active=(active.lower() == 'true'))
+        
+        translations_qs = translations_qs.order_by('fromeditype', 'frommessagetype', 'alt')
+        
+        paginator = Paginator(translations_qs, per_page)
+        page_obj = paginator.get_page(page)
+        
+        translations_data = []
+        for t in page_obj:
+            translations_data.append({
+                'id': t.id,
+                'active': t.active,
+                'fromeditype': t.fromeditype,
+                'frommessagetype': t.frommessagetype,
+                'toeditype': t.toeditype,
+                'tomessagetype': t.tomessagetype,
+                'tscript': t.tscript,
+                'alt': t.alt,
+                'frompartner': {
+                    'id': str(t.frompartner.id) if t.frompartner and hasattr(t.frompartner, 'id') else None,
+                    'idpartner': t.frompartner.idpartner if t.frompartner else None,
+                } if t.frompartner else None,
+                'topartner': {
+                    'id': str(t.topartner.id) if t.topartner and hasattr(t.topartner, 'id') else None,
+                    'idpartner': t.topartner.idpartner if t.topartner else None,
+                } if t.topartner else None,
+                'desc': t.desc,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'translations': translations_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_translation_create(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import translate, partner as PartnerModel
+        
+        data = json.loads(request.body)
+        
+        t = translate()
+        t.active = data.get('active', False)
+        t.fromeditype = data.get('fromeditype')
+        t.frommessagetype = data.get('frommessagetype')
+        t.toeditype = data.get('toeditype')
+        t.tomessagetype = data.get('tomessagetype')
+        t.tscript = data.get('tscript')
+        t.alt = data.get('alt', '')
+        t.desc = data.get('desc', '')
+        
+        if data.get('frompartner_id'):
+            t.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id'])
+        if data.get('topartner_id'):
+            t.topartner = PartnerModel.objects.get(idpartner=data['topartner_id'])
+        
+        t.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Translation created successfully',
+            'translation_id': t.id
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["GET"])
+def admin_translation_detail(request, translation_id):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import translate
+        
+        t = translate.objects.select_related('frompartner', 'topartner').get(id=translation_id)
+        
+        return JsonResponse({
+            'success': True,
+            'translation': {
+                'id': t.id,
+                'active': t.active,
+                'fromeditype': t.fromeditype,
+                'frommessagetype': t.frommessagetype,
+                'toeditype': t.toeditype,
+                'tomessagetype': t.tomessagetype,
+                'tscript': t.tscript,
+                'alt': t.alt,
+                'frompartner': {
+                    'id': str(t.frompartner.id) if hasattr(t.frompartner, 'id') else None,
+                    'idpartner': t.frompartner.idpartner,
+                    'name': t.frompartner.name,
+                } if t.frompartner else None,
+                'topartner': {
+                    'id': str(t.topartner.id) if hasattr(t.topartner, 'id') else None,
+                    'idpartner': t.topartner.idpartner,
+                    'name': t.topartner.name,
+                } if t.topartner else None,
+                'desc': t.desc,
+            }
+        })
+    except translate.DoesNotExist:
+        return JsonResponse({'error': 'Translation not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["PUT"])
+def admin_translation_update(request, translation_id):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import translate, partner as PartnerModel
+        
+        t = translate.objects.get(id=translation_id)
+        data = json.loads(request.body)
+        
+        if 'active' in data:
+            t.active = data['active']
+        if 'fromeditype' in data:
+            t.fromeditype = data['fromeditype']
+        if 'frommessagetype' in data:
+            t.frommessagetype = data['frommessagetype']
+        if 'toeditype' in data:
+            t.toeditype = data['toeditype']
+        if 'tomessagetype' in data:
+            t.tomessagetype = data['tomessagetype']
+        if 'tscript' in data:
+            t.tscript = data['tscript']
+        if 'alt' in data:
+            t.alt = data['alt']
+        if 'desc' in data:
+            t.desc = data['desc']
+        
+        if 'frompartner_id' in data:
+            t.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id']) if data['frompartner_id'] else None
+        if 'topartner_id' in data:
+            t.topartner = PartnerModel.objects.get(idpartner=data['topartner_id']) if data['topartner_id'] else None
+        
+        t.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Translation updated successfully'
+        })
+    except translate.DoesNotExist:
+        return JsonResponse({'error': 'Translation not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_translation_delete(request, translation_id):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import translate
+        
+        t = translate.objects.get(id=translation_id)
+        t.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Translation deleted successfully'
+        })
+    except translate.DoesNotExist:
+        return JsonResponse({'error': 'Translation not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
 @require_http_methods(["GET"])
 def admin_channel_types(request):
     """

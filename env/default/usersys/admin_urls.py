@@ -62,5 +62,9 @@ urlpatterns = [
     path('channels', admin_views.admin_channels_list_or_create, name='admin_channels_list_create'),
     path('channels/<str:channel_id>', admin_views.admin_channel_detail_update_delete, name='admin_channel_detail'),
     path('channels/<str:channel_id>/test', admin_views.admin_channel_test, name='admin_channel_test'),
+    
+    # Translations Management
+    path('translations', admin_views.admin_translations_list_or_create, name='admin_translations_list_create'),
+    path('translations/<int:translation_id>', admin_views.admin_translation_detail_update_delete, name='admin_translation_detail'),
 ]
 ]
