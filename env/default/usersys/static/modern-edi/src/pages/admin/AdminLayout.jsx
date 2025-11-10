@@ -14,7 +14,11 @@ import {
   TableCellsIcon,
   HashtagIcon,
   InboxIcon,
-  PaperAirplaneIcon
+  PaperAirplaneIcon,
+  ComputerDesktopIcon,
+  PlayIcon,
+  FolderIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
@@ -34,6 +38,10 @@ export default function AdminLayout() {
     { name: 'Counters', href: '/admin/counters', icon: HashtagIcon },
     { name: 'Incoming', href: '/admin/incoming', icon: InboxIcon },
     { name: 'Outgoing', href: '/admin/outgoing', icon: PaperAirplaneIcon },
+    { name: 'System', href: '/admin/system', icon: ComputerDesktopIcon },
+    { name: 'Engine', href: '/admin/engine', icon: PlayIcon },
+    { name: 'Files', href: '/admin/files', icon: FolderIcon },
+    { name: 'Logs', href: '/admin/logs', icon: DocumentTextIcon },
     { name: 'Users', href: '/admin/users', icon: UsersIcon },
     { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
     { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
