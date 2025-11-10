@@ -3,6 +3,13 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import FolderView from './pages/FolderView';
 
+// Admin Authentication
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminSignup from './pages/admin/AdminSignup';
+import AdminForgotPassword from './pages/admin/AdminForgotPassword';
+
 // Admin Dashboard
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -24,6 +31,7 @@ import System from './pages/admin/System';
 import Engine from './pages/admin/Engine';
 import Files from './pages/admin/Files';
 import Logs from './pages/admin/Logs';
+import Cleanup from './pages/admin/Cleanup';
 
 // Partner Portal
 import PartnerPortalLayout from './pages/partner/PartnerPortalLayout';
@@ -38,16 +46,26 @@ import './App.css';
 
 function App() {
   return (
-    <Routes>
-      {/* Modern EDI Interface - Redirect to Admin */}
-      <Route path="/" element={<Navigate to="/admin" replace />} />
-      <Route path="/old-dashboard" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="folder/:folderName" element={<FolderView />} />
-      </Route>
+    <AdminAuthProvider>
+      <Routes>
+        {/* Modern EDI Interface - Redirect to Admin */}
+        <Route path="/" element={<Navigate to="/admin" replace />} />
+        <Route path="/old-dashboard" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="folder/:folderName" element={<FolderView />} />
+        </Route>
 
-      {/* Admin Dashboard */}
-      <Route path="/admin" element={<AdminLayout />}>
+        {/* Admin Auth Routes (Public) */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/signup" element={<AdminSignup />} />
+        <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+
+        {/* Admin Dashboard (Protected) */}
+        <Route path="/admin" element={
+          <ProtectedAdminRoute>
+            <AdminLayout />
+          </ProtectedAdminRoute>
+        }>
         <Route index element={<AdminDashboard />} />
         <Route path="partners" element={<PartnerManagement />} />
         <Route path="routes" element={<RoutesPage />} />
@@ -62,6 +80,7 @@ function App() {
         <Route path="engine" element={<Engine />} />
         <Route path="files" element={<Files />} />
         <Route path="logs" element={<Logs />} />
+        <Route path="cleanup" element={<Cleanup />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="permissions" element={<PermissionsManagement />} />
         <Route path="analytics" element={<Analytics />} />
@@ -80,9 +99,10 @@ function App() {
         <Route path="settings" element={<PartnerSettings />} />
       </Route>
 
-      {/* Catch all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AdminAuthProvider>
   );
 }
 

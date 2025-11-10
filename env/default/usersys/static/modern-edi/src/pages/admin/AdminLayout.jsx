@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 import { 
   HomeIcon, 
   UsersIcon, 
@@ -38,6 +39,7 @@ export default function AdminLayout() {
   });
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAdminAuth();
 
   const navigationSections = [
     {
@@ -83,6 +85,7 @@ export default function AdminLayout() {
       icon: WrenchScrewdriverIcon,
       items: [
         { name: 'Engine', href: '/admin/engine', icon: PlayIcon },
+        { name: 'Cleanup', href: '/admin/cleanup', icon: TrashIcon },
         { name: 'Files', href: '/admin/files', icon: FolderIcon },
         { name: 'Logs', href: '/admin/logs', icon: DocumentTextIcon },
         { name: 'System', href: '/admin/system', icon: ComputerDesktopIcon },
@@ -108,9 +111,9 @@ export default function AdminLayout() {
     }));
   };
 
-  const handleLogout = () => {
-    // Logout logic
-    window.location.href = '/admin/logout/';
+  const handleLogout = async () => {
+    await logout();
+    navigate('/admin/login', { replace: true });
   };
 
   return (
