@@ -1612,3 +1612,437 @@ def admin_routes_export(request):
     except Exception as e:
         import traceback
         return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+# ========================================
+# Channels Management
+# ========================================
+
+def admin_channels_list_or_create(request):
+    """
+    List channels (GET) or create channel (POST)
+    """
+    if request.method == 'GET':
+        return admin_channels_list(request)
+    elif request.method == 'POST':
+        return admin_channel_create(request)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+def admin_channel_detail_update_delete(request, channel_id):
+    """
+    Get channel detail (GET), update channel (PUT), or delete channel (DELETE)
+    """
+    if request.method == 'GET':
+        return admin_channel_detail(request, channel_id)
+    elif request.method == 'PUT':
+        return admin_channel_update(request, channel_id)
+    elif request.method == 'DELETE':
+        return admin_channel_delete(request, channel_id)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@require_http_methods(["GET"])
+def admin_channels_list(request):
+    """
+    List all channels with search and filtering
+    GET /api/v1/admin/channels?search=&inorout=&type=&page=1
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        # Get query parameters
+        search = request.GET.get('search', '').strip()
+        inorout = request.GET.get('inorout', '').strip()  # in, out
+        channel_type = request.GET.get('type', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Build query
+        channels_qs = channel.objects.all()
+        
+        # Apply filters
+        if search:
+            channels_qs = channels_qs.filter(
+                Q(idchannel__icontains=search) |
+                Q(type__icontains=search) |
+                Q(host__icontains=search) |
+                Q(path__icontains=search) |
+                Q(desc__icontains=search)
+            )
+        
+        if inorout:
+            channels_qs = channels_qs.filter(inorout=inorout)
+        
+        if channel_type:
+            channels_qs = channels_qs.filter(type=channel_type)
+        
+        # Order by idchannel
+        channels_qs = channels_qs.order_by('idchannel')
+        
+        # Paginate
+        paginator = Paginator(channels_qs, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize channels
+        channels_data = []
+        for ch in page_obj:
+            channels_data.append({
+                'id': ch.idchannel,
+                'idchannel': ch.idchannel,
+                'inorout': ch.inorout,
+                'type': ch.type,
+                'host': ch.host,
+                'port': ch.port,
+                'username': ch.username,
+                'path': ch.path,
+                'filename': ch.filename,
+                'remove': ch.remove,
+                'archivepath': ch.archivepath,
+                'desc': ch.desc,
+                'charset': ch.charset,
+                'lockname': ch.lockname,
+                'syslock': ch.syslock,
+                'parameters': ch.parameters,
+                'ftpaccount': ch.ftpaccount,
+                'ftpactive': ch.ftpactive,
+                'ftpbinary': ch.ftpbinary,
+                'starttls': ch.starttls,
+                'apop': ch.apop,
+                'askmdn': ch.askmdn,
+                'sendmdn': ch.sendmdn,
+                'mdnchannel': ch.mdnchannel,
+                'keyfile': ch.keyfile,
+                'certfile': ch.certfile,
+                'testpath': ch.testpath,
+                'debug': ch.debug,
+                'rsrv1': ch.rsrv1,
+                'rsrv2': ch.rsrv2,
+                'rsrv3': ch.rsrv3,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'channels': channels_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_channel_create(request):
+    """
+    Create a new channel
+    POST /api/v1/admin/channels
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        data = json.loads(request.body)
+        
+        # Check if channel already exists
+        if channel.objects.filter(idchannel=data.get('idchannel')).exists():
+            return JsonResponse({'error': 'Channel with this ID already exists'}, status=400)
+        
+        # Create channel
+        ch = channel()
+        ch.idchannel = data.get('idchannel')
+        ch.inorout = data.get('inorout', 'in')
+        ch.type = data.get('type', 'file')
+        ch.host = data.get('host', '')
+        ch.port = data.get('port')
+        ch.username = data.get('username', '')
+        ch.secret = data.get('secret', '')
+        ch.path = data.get('path', '')
+        ch.filename = data.get('filename', '')
+        ch.remove = data.get('remove', False)
+        ch.archivepath = data.get('archivepath', '')
+        ch.desc = data.get('desc', '')
+        ch.charset = data.get('charset', 'us-ascii')
+        ch.lockname = data.get('lockname', '')
+        ch.syslock = data.get('syslock', False)
+        ch.parameters = data.get('parameters', '')
+        ch.ftpaccount = data.get('ftpaccount', '')
+        ch.ftpactive = data.get('ftpactive', False)
+        ch.ftpbinary = data.get('ftpbinary', False)
+        ch.starttls = data.get('starttls', False)
+        ch.apop = data.get('apop', False)
+        ch.askmdn = data.get('askmdn', '')
+        ch.sendmdn = data.get('sendmdn', '')
+        ch.mdnchannel = data.get('mdnchannel', '')
+        ch.keyfile = data.get('keyfile', '')
+        ch.certfile = data.get('certfile', '')
+        ch.testpath = data.get('testpath', '')
+        ch.debug = data.get('debug')
+        ch.rsrv1 = data.get('rsrv1')
+        ch.rsrv2 = data.get('rsrv2')
+        ch.rsrv3 = data.get('rsrv3')
+        
+        ch.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Channel created successfully',
+            'channel_id': ch.idchannel
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["GET"])
+def admin_channel_detail(request, channel_id):
+    """
+    Get channel details
+    GET /api/v1/admin/channels/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        ch = channel.objects.get(idchannel=channel_id)
+        
+        channel_data = {
+            'id': ch.idchannel,
+            'idchannel': ch.idchannel,
+            'inorout': ch.inorout,
+            'type': ch.type,
+            'host': ch.host,
+            'port': ch.port,
+            'username': ch.username,
+            'has_secret': bool(ch.secret),  # Don't send actual password
+            'path': ch.path,
+            'filename': ch.filename,
+            'remove': ch.remove,
+            'archivepath': ch.archivepath,
+            'desc': ch.desc,
+            'charset': ch.charset,
+            'lockname': ch.lockname,
+            'syslock': ch.syslock,
+            'parameters': ch.parameters,
+            'ftpaccount': ch.ftpaccount,
+            'ftpactive': ch.ftpactive,
+            'ftpbinary': ch.ftpbinary,
+            'starttls': ch.starttls,
+            'apop': ch.apop,
+            'askmdn': ch.askmdn,
+            'sendmdn': ch.sendmdn,
+            'mdnchannel': ch.mdnchannel,
+            'keyfile': ch.keyfile,
+            'certfile': ch.certfile,
+            'testpath': ch.testpath,
+            'debug': ch.debug,
+            'rsrv1': ch.rsrv1,
+            'rsrv2': ch.rsrv2,
+            'rsrv3': ch.rsrv3,
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'channel': channel_data
+        })
+    except channel.DoesNotExist:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["PUT"])
+def admin_channel_update(request, channel_id):
+    """
+    Update a channel
+    PUT /api/v1/admin/channels/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        ch = channel.objects.get(idchannel=channel_id)
+        data = json.loads(request.body)
+        
+        # Update fields (can't change idchannel as it's the primary key)
+        if 'inorout' in data:
+            ch.inorout = data['inorout']
+        if 'type' in data:
+            ch.type = data['type']
+        if 'host' in data:
+            ch.host = data['host']
+        if 'port' in data:
+            ch.port = data['port']
+        if 'username' in data:
+            ch.username = data['username']
+        if 'secret' in data and data['secret']:  # Only update if provided
+            ch.secret = data['secret']
+        if 'path' in data:
+            ch.path = data['path']
+        if 'filename' in data:
+            ch.filename = data['filename']
+        if 'remove' in data:
+            ch.remove = data['remove']
+        if 'archivepath' in data:
+            ch.archivepath = data['archivepath']
+        if 'desc' in data:
+            ch.desc = data['desc']
+        if 'charset' in data:
+            ch.charset = data['charset']
+        if 'lockname' in data:
+            ch.lockname = data['lockname']
+        if 'syslock' in data:
+            ch.syslock = data['syslock']
+        if 'parameters' in data:
+            ch.parameters = data['parameters']
+        if 'ftpaccount' in data:
+            ch.ftpaccount = data['ftpaccount']
+        if 'ftpactive' in data:
+            ch.ftpactive = data['ftpactive']
+        if 'ftpbinary' in data:
+            ch.ftpbinary = data['ftpbinary']
+        if 'starttls' in data:
+            ch.starttls = data['starttls']
+        if 'apop' in data:
+            ch.apop = data['apop']
+        if 'askmdn' in data:
+            ch.askmdn = data['askmdn']
+        if 'sendmdn' in data:
+            ch.sendmdn = data['sendmdn']
+        if 'mdnchannel' in data:
+            ch.mdnchannel = data['mdnchannel']
+        if 'keyfile' in data:
+            ch.keyfile = data['keyfile']
+        if 'certfile' in data:
+            ch.certfile = data['certfile']
+        if 'testpath' in data:
+            ch.testpath = data['testpath']
+        if 'debug' in data:
+            ch.debug = data['debug']
+        if 'rsrv1' in data:
+            ch.rsrv1 = data['rsrv1']
+        if 'rsrv2' in data:
+            ch.rsrv2 = data['rsrv2']
+        if 'rsrv3' in data:
+            ch.rsrv3 = data['rsrv3']
+        
+        ch.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Channel updated successfully'
+        })
+    except channel.DoesNotExist:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_channel_delete(request, channel_id):
+    """
+    Delete a channel
+    DELETE /api/v1/admin/channels/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        ch = channel.objects.get(idchannel=channel_id)
+        
+        # Check if channel is used in routes
+        from bots.models import routes
+        in_routes = routes.objects.filter(Q(fromchannel=ch) | Q(tochannel=ch)).count()
+        if in_routes > 0:
+            return JsonResponse({
+                'error': f'Cannot delete channel. It is used in {in_routes} route(s). '
+                        'Please remove the routes first or change their channels.'
+            }, status=400)
+        
+        ch.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Channel {channel_id} deleted successfully'
+        })
+    except channel.DoesNotExist:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_channel_test(request, channel_id):
+    """
+    Test channel connection
+    POST /api/v1/admin/channels/<id>/test
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import channel
+        
+        ch = channel.objects.get(idchannel=channel_id)
+        
+        # TODO: Implement actual connection testing based on channel type
+        # For now, return a placeholder response
+        return JsonResponse({
+            'success': True,
+            'message': f'Channel test for {channel_id} - Test functionality coming soon',
+            'details': {
+                'type': ch.type,
+                'host': ch.host,
+                'port': ch.port,
+                'note': 'Full connection testing will be implemented in the next iteration'
+            }
+        })
+    except channel.DoesNotExist:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_channel_types(request):
+    """
+    Get available channel types
+    GET /api/v1/admin/channels/types
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import CHANNELTYPE
+        
+        # Convert choices to list of dicts
+        types = [{'value': choice[0], 'label': choice[1]} for choice in CHANNELTYPE]
+        
+        return JsonResponse({
+            'success': True,
+            'types': types
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)

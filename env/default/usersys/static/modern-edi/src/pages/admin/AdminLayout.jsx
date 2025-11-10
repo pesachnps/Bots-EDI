@@ -22,6 +22,7 @@ export default function AdminLayout() {
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
     { name: 'Partners', href: '/admin/partners', icon: UsersIcon },
     { name: 'Routes', href: '/admin/routes', icon: MapIcon },
+    { name: 'Channels', href: '/admin/channels', icon: HomeIcon },
     { name: 'Users', href: '/admin/users', icon: UsersIcon },
     { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
     { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },

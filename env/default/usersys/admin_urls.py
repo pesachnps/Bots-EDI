@@ -50,11 +50,17 @@ urlpatterns = [
     
     # Routes Management
     path('routes', admin_views.admin_routes_list, name='admin_routes_list'),
-    path('routes', admin_views.admin_route_create, name='admin_route_create'),
     path('routes/<int:route_id>', admin_views.admin_route_detail, name='admin_route_detail'),
     path('routes/<int:route_id>', admin_views.admin_route_update, name='admin_route_update'),
     path('routes/<int:route_id>', admin_views.admin_route_delete, name='admin_route_delete'),
     path('routes/<int:route_id>/activate', admin_views.admin_route_toggle_active, name='admin_route_toggle_active'),
     path('routes/<int:route_id>/clone', admin_views.admin_route_clone, name='admin_route_clone'),
     path('routes/export', admin_views.admin_routes_export, name='admin_routes_export'),
+    
+    # Channels Management
+    path('channels/types', admin_views.admin_channel_types, name='admin_channel_types'),
+    path('channels', admin_views.admin_channels_list_or_create, name='admin_channels_list_create'),
+    path('channels/<str:channel_id>', admin_views.admin_channel_detail_update_delete, name='admin_channel_detail'),
+    path('channels/<str:channel_id>/test', admin_views.admin_channel_test, name='admin_channel_test'),
+]
 ]
