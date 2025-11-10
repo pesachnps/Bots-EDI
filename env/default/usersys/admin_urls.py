@@ -80,4 +80,10 @@ urlpatterns = [
     # Counters Management
     path('counters', admin_views.admin_counters_list, name='admin_counters_list'),
     path('counters/<str:domein>', admin_views.admin_counter_update, name='admin_counter_update'),
+    
+    # Transaction Management
+    path('transactions/incoming', admin_views.admin_transactions_incoming, name='admin_transactions_incoming'),
+    path('transactions/outgoing', admin_views.admin_transactions_outgoing, name='admin_transactions_outgoing'),
+    path('transactions/<int:ta_id>', admin_views.admin_transaction_detail, name='admin_transaction_detail'),
+    path('transactions/<int:ta_id>/resend', admin_views.admin_transaction_resend, name='admin_transaction_resend'),
 ]

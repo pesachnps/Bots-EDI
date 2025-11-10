@@ -2850,3 +2850,251 @@ def admin_counter_update(request, domein):
     except Exception as e:
         import traceback
         return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+# ============================================================================
+# TRANSACTIONS MANAGEMENT
+# ============================================================================
+
+@require_http_methods(["GET"])
+def admin_transactions_incoming(request):
+    """
+    List incoming transactions (statust=100)
+    GET /api/v1/admin/transactions/incoming?status=&from_date=&to_date=&page=1
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        from datetime import datetime
+        
+        # Get query parameters
+        status = request.GET.get('status', '').strip()
+        from_date = request.GET.get('from_date', '').strip()
+        to_date = request.GET.get('to_date', '').strip()
+        search = request.GET.get('search', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Build query - statust=100 for incoming
+        transactions = ta.objects.filter(statust=100)
+        
+        if status:
+            transactions = transactions.filter(status=int(status))
+        
+        if from_date:
+            transactions = transactions.filter(ts__gte=datetime.fromisoformat(from_date))
+        
+        if to_date:
+            transactions = transactions.filter(ts__lte=datetime.fromisoformat(to_date))
+        
+        if search:
+            transactions = transactions.filter(
+                Q(filename__icontains=search) |
+                Q(frompartner__icontains=search) |
+                Q(topartner__icontains=search) |
+                Q(reference__icontains=search)
+            )
+        
+        # Order by newest first
+        transactions = transactions.order_by('-ts')
+        
+        # Paginate
+        paginator = Paginator(transactions, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize transactions
+        transactions_data = []
+        for tx in page_obj:
+            transactions_data.append({
+                'idta': tx.idta,
+                'statust': tx.statust,
+                'status': tx.status,
+                'frompartner': tx.frompartner,
+                'topartner': tx.topartner,
+                'fromchannel': tx.fromchannel,
+                'tochannel': tx.tochannel,
+                'editype': tx.editype,
+                'messagetype': tx.messagetype,
+                'filename': tx.filename,
+                'ts': tx.ts.isoformat(),
+                'filesize': tx.filesize,
+                'reference': tx.reference,
+                'errortext': tx.errortext,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'transactions': transactions_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_transactions_outgoing(request):
+    """
+    List outgoing transactions (statust>=200)
+    GET /api/v1/admin/transactions/outgoing?status=&from_date=&to_date=&page=1
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        from datetime import datetime
+        
+        # Get query parameters
+        status = request.GET.get('status', '').strip()
+        from_date = request.GET.get('from_date', '').strip()
+        to_date = request.GET.get('to_date', '').strip()
+        search = request.GET.get('search', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Build query - statust>=200 for outgoing
+        transactions = ta.objects.filter(statust__gte=200)
+        
+        if status:
+            transactions = transactions.filter(status=int(status))
+        
+        if from_date:
+            transactions = transactions.filter(ts__gte=datetime.fromisoformat(from_date))
+        
+        if to_date:
+            transactions = transactions.filter(ts__lte=datetime.fromisoformat(to_date))
+        
+        if search:
+            transactions = transactions.filter(
+                Q(filename__icontains=search) |
+                Q(frompartner__icontains=search) |
+                Q(topartner__icontains=search) |
+                Q(reference__icontains=search)
+            )
+        
+        # Order by newest first
+        transactions = transactions.order_by('-ts')
+        
+        # Paginate
+        paginator = Paginator(transactions, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize transactions
+        transactions_data = []
+        for tx in page_obj:
+            transactions_data.append({
+                'idta': tx.idta,
+                'statust': tx.statust,
+                'status': tx.status,
+                'frompartner': tx.frompartner,
+                'topartner': tx.topartner,
+                'fromchannel': tx.fromchannel,
+                'tochannel': tx.tochannel,
+                'editype': tx.editype,
+                'messagetype': tx.messagetype,
+                'filename': tx.filename,
+                'ts': tx.ts.isoformat(),
+                'filesize': tx.filesize,
+                'reference': tx.reference,
+                'errortext': tx.errortext,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'transactions': transactions_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_transaction_detail(request, ta_id):
+    """
+    Get transaction details
+    GET /api/v1/admin/transactions/<ta_id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        
+        tx = ta.objects.get(idta=ta_id)
+        
+        return JsonResponse({
+            'success': True,
+            'transaction': {
+                'idta': tx.idta,
+                'statust': tx.statust,
+                'status': tx.status,
+                'parent': tx.parent,
+                'child': tx.child,
+                'frompartner': tx.frompartner,
+                'topartner': tx.topartner,
+                'fromchannel': tx.fromchannel,
+                'tochannel': tx.tochannel,
+                'editype': tx.editype,
+                'messagetype': tx.messagetype,
+                'filename': tx.filename,
+                'ts': tx.ts.isoformat(),
+                'filesize': tx.filesize,
+                'reference': tx.reference,
+                'errortext': tx.errortext,
+                'confirmasked': tx.confirmasked,
+                'confirmed': tx.confirmed,
+                'confirmtype': tx.confirmtype,
+            }
+        })
+    except ta.DoesNotExist:
+        return JsonResponse({'error': 'Transaction not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_transaction_resend(request, ta_id):
+    """
+    Resend a transaction
+    POST /api/v1/admin/transactions/<ta_id>/resend
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        
+        tx = ta.objects.get(idta=ta_id)
+        
+        # Set retransmit flag
+        tx.retransmit = True
+        tx.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Transaction marked for resend'
+        })
+    except ta.DoesNotExist:
+        return JsonResponse({'error': 'Transaction not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)

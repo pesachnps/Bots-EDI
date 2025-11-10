@@ -12,7 +12,9 @@ import {
   MapIcon,
   CheckCircleIcon,
   TableCellsIcon,
-  HashtagIcon
+  HashtagIcon,
+  InboxIcon,
+  PaperAirplaneIcon
 } from '@heroicons/react/24/outline';
 import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
@@ -30,6 +32,8 @@ export default function AdminLayout() {
     { name: 'Confirm Rules', href: '/admin/confirmrules', icon: CheckCircleIcon },
     { name: 'Code Lists', href: '/admin/codelists', icon: TableCellsIcon },
     { name: 'Counters', href: '/admin/counters', icon: HashtagIcon },
+    { name: 'Incoming', href: '/admin/incoming', icon: InboxIcon },
+    { name: 'Outgoing', href: '/admin/outgoing', icon: PaperAirplaneIcon },
     { name: 'Users', href: '/admin/users', icon: UsersIcon },
     { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
     { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },

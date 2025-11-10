@@ -18,6 +18,8 @@ import Translations from './pages/admin/Translations';
 import ConfirmRules from './pages/admin/ConfirmRules';
 import CodeLists from './pages/admin/CodeLists';
 import Counters from './pages/admin/Counters';
+import Incoming from './pages/admin/Incoming';
+import Outgoing from './pages/admin/Outgoing';
 
 // Partner Portal
 import PartnerPortalLayout from './pages/partner/PartnerPortalLayout';
@@ -50,6 +52,8 @@ function App() {
         <Route path="confirmrules" element={<ConfirmRules />} />
         <Route path="codelists" element={<CodeLists />} />
         <Route path="counters" element={<Counters />} />
+        <Route path="incoming" element={<Incoming />} />
+        <Route path="outgoing" element={<Outgoing />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="permissions" element={<PermissionsManagement />} />
         <Route path="analytics" element={<Analytics />} />
