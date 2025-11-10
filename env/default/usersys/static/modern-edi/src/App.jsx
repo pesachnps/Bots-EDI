@@ -12,6 +12,7 @@ import PermissionsManagement from './pages/admin/PermissionsManagement';
 import Analytics from './pages/admin/Analytics';
 import ActivityLog from './pages/admin/ActivityLog';
 import MailboxFolderView from './pages/admin/MailboxFolderView';
+import RoutesManagement from './pages/admin/Routes';
 
 // Partner Portal
 import PartnerPortalLayout from './pages/partner/PartnerPortalLayout';
@@ -38,6 +39,7 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
         <Route path="partners" element={<PartnerManagement />} />
+        <Route path="routes" element={<RoutesManagement />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="permissions" element={<PermissionsManagement />} />
         <Route path="analytics" element={<Analytics />} />

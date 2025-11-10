@@ -31,7 +31,7 @@ export default function PartnerManagement() {
         params.status = statusFilter;
       }
       const data = await adminApi.getPartners(params);
-      setPartners(data.results || []);
+      setPartners(data.partners || []);
       setError(null);
     } catch (err) {
       setError(err.message);

@@ -16,10 +16,13 @@ const queryClient = new QueryClient({
   },
 })
 
+// Determine basename based on environment
+const basename = import.meta.env.MODE === 'production' ? '/static/modern-edi' : ''
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="/modern-edi">
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </QueryClientProvider>

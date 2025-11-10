@@ -47,4 +47,14 @@ urlpatterns = [
     path('scheduled-reports/<int:report_id>', admin_views.admin_scheduled_report_delete, name='admin_scheduled_report_delete'),
     path('scheduled-reports/<int:report_id>/run', admin_views.admin_scheduled_report_run_now, name='admin_scheduled_report_run_now'),
     path('scheduled-reports/<int:report_id>/preview', admin_views.admin_scheduled_report_preview, name='admin_scheduled_report_preview'),
+    
+    # Routes Management
+    path('routes', admin_views.admin_routes_list, name='admin_routes_list'),
+    path('routes', admin_views.admin_route_create, name='admin_route_create'),
+    path('routes/<int:route_id>', admin_views.admin_route_detail, name='admin_route_detail'),
+    path('routes/<int:route_id>', admin_views.admin_route_update, name='admin_route_update'),
+    path('routes/<int:route_id>', admin_views.admin_route_delete, name='admin_route_delete'),
+    path('routes/<int:route_id>/activate', admin_views.admin_route_toggle_active, name='admin_route_toggle_active'),
+    path('routes/<int:route_id>/clone', admin_views.admin_route_clone, name='admin_route_clone'),
+    path('routes/export', admin_views.admin_routes_export, name='admin_routes_export'),
 ]

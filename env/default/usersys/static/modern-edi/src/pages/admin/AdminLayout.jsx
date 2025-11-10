@@ -8,7 +8,8 @@ import {
   ShieldCheckIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  MapIcon
 } from '@heroicons/react/24/outline';
 import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
@@ -20,6 +21,7 @@ export default function AdminLayout() {
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
     { name: 'Partners', href: '/admin/partners', icon: UsersIcon },
+    { name: 'Routes', href: '/admin/routes', icon: MapIcon },
     { name: 'Users', href: '/admin/users', icon: UsersIcon },
     { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
     { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },

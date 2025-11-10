@@ -20,11 +20,12 @@ echo Starting Bots webserver...
 echo.
 echo Backend will be available at: http://localhost:8080
 echo Django Admin: http://localhost:8080/admin
+echo Modern EDI API: http://localhost:8080/modern-edi/api/v1/
 echo.
 echo Press Ctrl+C to stop the server
 echo.
 
-:: Start webserver using bots-webserver command
-bots-webserver
+:: Start webserver using start_server.py (sets correct config path)
+python start_server.py
 
 pause

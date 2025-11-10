@@ -2,6 +2,27 @@
 
 This directory contains a complete Bots EDI (Electronic Data Interchange) installation with comprehensive plugin support.
 
+## 🌐 Port Configuration
+
+The application uses fixed ports for consistency across all environments:
+
+- **Backend Server**: Port **8080**
+  - Main API: http://localhost:8080
+  - Django Admin: http://localhost:8080/admin
+  - Modern EDI API: http://localhost:8080/modern-edi/api/v1/
+  - Admin Dashboard: http://localhost:8080/modern-edi/api/v1/admin/
+  - Partner Portal: http://localhost:8080/api/v1/partner/
+
+- **Frontend Dev Server**: Port **3000**
+  - Application: http://localhost:3000/static/modern-edi/
+  - Proxies API requests to backend (port 8080)
+
+Configuration files:
+- Backend port: `env/default/config/bots.ini` (webserver section)
+- Frontend port: `env/default/usersys/static/modern-edi/vite.config.js`
+
+See [START_SERVERS.md](START_SERVERS.md) for detailed startup instructions.
+
 ## 🆕 Recent Changes
 
 ### November 2025 - Major Feature Updates

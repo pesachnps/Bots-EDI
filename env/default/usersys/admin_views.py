@@ -537,7 +537,8 @@ def admin_activity_logs(request):
         
         return JsonResponse({
             'success': True,
-            'logs': logs_data,
+            'results': logs_data,
+            'count': paginator.count,
             'pagination': {
                 'page': page,
                 'per_page': per_page,
@@ -1070,3 +1071,544 @@ def admin_scheduled_report_preview(request, report_id):
         return JsonResponse({'error': 'Report not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+# ========================================
+# Routes Management
+# ========================================
+
+@require_http_methods(["GET"])
+def admin_routes_list(request):
+    """
+    List all routes with search and filtering
+    GET /api/v1/admin/routes?search=&idroute=&fromchannel=&tochannel=&active=&page=1
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        
+        # Get query parameters
+        search = request.GET.get('search', '').strip()
+        idroute = request.GET.get('idroute', '').strip()
+        fromchannel = request.GET.get('fromchannel', '').strip()
+        tochannel = request.GET.get('tochannel', '').strip()
+        active = request.GET.get('active', '').strip()
+        fromeditype = request.GET.get('fromeditype', '').strip()
+        toeditype = request.GET.get('toeditype', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Build query
+        routes_qs = RoutesModel.objects.select_related(
+            'fromchannel', 'tochannel', 'frompartner', 'topartner',
+            'frompartner_tochannel', 'topartner_tochannel'
+        ).all()
+        
+        # Apply filters
+        if search:
+            routes_qs = routes_qs.filter(
+                Q(idroute__icontains=search) |
+                Q(fromeditype__icontains=search) |
+                Q(toeditype__icontains=search) |
+                Q(desc__icontains=search)
+            )
+        
+        if idroute:
+            routes_qs = routes_qs.filter(idroute=idroute)
+        
+        if fromchannel:
+            routes_qs = routes_qs.filter(fromchannel__idchannel=fromchannel)
+        
+        if tochannel:
+            routes_qs = routes_qs.filter(tochannel__idchannel=tochannel)
+        
+        if active:
+            routes_qs = routes_qs.filter(active=(active.lower() == 'true'))
+        
+        if fromeditype:
+            routes_qs = routes_qs.filter(fromeditype=fromeditype)
+        
+        if toeditype:
+            routes_qs = routes_qs.filter(toeditype=toeditype)
+        
+        # Order by idroute and sequence
+        routes_qs = routes_qs.order_by('idroute', 'seq')
+        
+        # Paginate
+        paginator = Paginator(routes_qs, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize routes
+        routes_data = []
+        for route in page_obj:
+            routes_data.append({
+                'id': route.id,
+                'idroute': route.idroute,
+                'seq': route.seq,
+                'active': route.active,
+                'notindefaultrun': route.notindefaultrun,
+                'fromchannel': {
+                    'id': route.fromchannel.id if route.fromchannel else None,
+                    'idchannel': route.fromchannel.idchannel if route.fromchannel else None,
+                    'type': route.fromchannel.type if route.fromchannel else None,
+                } if route.fromchannel else None,
+                'fromeditype': route.fromeditype,
+                'frommessagetype': route.frommessagetype,
+                'translateind': route.translateind,
+                'alt': route.alt,
+                'tochannel': {
+                    'id': route.tochannel.id if route.tochannel else None,
+                    'idchannel': route.tochannel.idchannel if route.tochannel else None,
+                    'type': route.tochannel.type if route.tochannel else None,
+                } if route.tochannel else None,
+                'toeditype': route.toeditype,
+                'tomessagetype': route.tomessagetype,
+                'frompartner': {
+                    'id': str(route.frompartner.id) if route.frompartner and hasattr(route.frompartner, 'id') else None,
+                    'idpartner': route.frompartner.idpartner if route.frompartner else None,
+                } if route.frompartner else None,
+                'topartner': {
+                    'id': str(route.topartner.id) if route.topartner and hasattr(route.topartner, 'id') else None,
+                    'idpartner': route.topartner.idpartner if route.topartner else None,
+                } if route.topartner else None,
+                'frompartner_tochannel': {
+                    'id': str(route.frompartner_tochannel.id) if route.frompartner_tochannel and hasattr(route.frompartner_tochannel, 'id') else None,
+                    'idpartner': route.frompartner_tochannel.idpartner if route.frompartner_tochannel else None,
+                } if route.frompartner_tochannel else None,
+                'topartner_tochannel': {
+                    'id': str(route.topartner_tochannel.id) if route.topartner_tochannel and hasattr(route.topartner_tochannel, 'id') else None,
+                    'idpartner': route.topartner_tochannel.idpartner if route.topartner_tochannel else None,
+                } if route.topartner_tochannel else None,
+                'testindicator': route.testindicator,
+                'dirmonitor': route.dirmonitor,
+                'defer': route.defer,
+                'zip_incoming': route.zip_incoming,
+                'zip_outgoing': route.zip_outgoing,
+                'desc': route.desc,
+                'routescript': getattr(route, 'routescript', None),
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'routes': routes_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_route_create(request):
+    """
+    Create a new route
+    POST /api/v1/admin/routes
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel, channel, partner as PartnerModel
+        
+        data = json.loads(request.body)
+        
+        # Create route
+        route = RoutesModel()
+        route.idroute = data.get('idroute')
+        route.seq = data.get('seq', 1)
+        route.active = data.get('active', False)
+        route.notindefaultrun = data.get('notindefaultrun', False)
+        
+        # Channels
+        if data.get('fromchannel_id'):
+            route.fromchannel = channel.objects.get(id=data['fromchannel_id'])
+        if data.get('tochannel_id'):
+            route.tochannel = channel.objects.get(id=data['tochannel_id'])
+        
+        # EDI types
+        route.fromeditype = data.get('fromeditype', '')
+        route.frommessagetype = data.get('frommessagetype', '')
+        route.toeditype = data.get('toeditype', '')
+        route.tomessagetype = data.get('tomessagetype', '')
+        
+        # Translation
+        route.translateind = data.get('translateind', 1)
+        route.alt = data.get('alt', '')
+        
+        # Partners
+        if data.get('frompartner_id'):
+            route.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id'])
+        if data.get('topartner_id'):
+            route.topartner = PartnerModel.objects.get(idpartner=data['topartner_id'])
+        if data.get('frompartner_tochannel_id'):
+            route.frompartner_tochannel = PartnerModel.objects.get(idpartner=data['frompartner_tochannel_id'])
+        if data.get('topartner_tochannel_id'):
+            route.topartner_tochannel = PartnerModel.objects.get(idpartner=data['topartner_tochannel_id'])
+        
+        # Other fields
+        route.testindicator = data.get('testindicator', '')
+        route.dirmonitor = data.get('dirmonitor', False)
+        route.defer = data.get('defer', False)
+        route.zip_incoming = data.get('zip_incoming')
+        route.zip_outgoing = data.get('zip_outgoing')
+        route.desc = data.get('desc', '')
+        
+        route.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Route created successfully',
+            'route_id': route.id
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["GET"])
+def admin_route_detail(request, route_id):
+    """
+    Get route details
+    GET /api/v1/admin/routes/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        
+        route = RoutesModel.objects.select_related(
+            'fromchannel', 'tochannel', 'frompartner', 'topartner',
+            'frompartner_tochannel', 'topartner_tochannel'
+        ).get(id=route_id)
+        
+        route_data = {
+            'id': route.id,
+            'idroute': route.idroute,
+            'seq': route.seq,
+            'active': route.active,
+            'notindefaultrun': route.notindefaultrun,
+            'fromchannel': {
+                'id': route.fromchannel.id,
+                'idchannel': route.fromchannel.idchannel,
+                'type': route.fromchannel.type,
+                'inorout': route.fromchannel.inorout,
+            } if route.fromchannel else None,
+            'fromeditype': route.fromeditype,
+            'frommessagetype': route.frommessagetype,
+            'translateind': route.translateind,
+            'alt': route.alt,
+            'tochannel': {
+                'id': route.tochannel.id,
+                'idchannel': route.tochannel.idchannel,
+                'type': route.tochannel.type,
+                'inorout': route.tochannel.inorout,
+            } if route.tochannel else None,
+            'toeditype': route.toeditype,
+            'tomessagetype': route.tomessagetype,
+            'frompartner': {
+                'id': str(route.frompartner.id) if hasattr(route.frompartner, 'id') else None,
+                'idpartner': route.frompartner.idpartner,
+                'name': route.frompartner.name,
+            } if route.frompartner else None,
+            'topartner': {
+                'id': str(route.topartner.id) if hasattr(route.topartner, 'id') else None,
+                'idpartner': route.topartner.idpartner,
+                'name': route.topartner.name,
+            } if route.topartner else None,
+            'frompartner_tochannel': {
+                'id': str(route.frompartner_tochannel.id) if hasattr(route.frompartner_tochannel, 'id') else None,
+                'idpartner': route.frompartner_tochannel.idpartner,
+                'name': route.frompartner_tochannel.name,
+            } if route.frompartner_tochannel else None,
+            'topartner_tochannel': {
+                'id': str(route.topartner_tochannel.id) if hasattr(route.topartner_tochannel, 'id') else None,
+                'idpartner': route.topartner_tochannel.idpartner,
+                'name': route.topartner_tochannel.name,
+            } if route.topartner_tochannel else None,
+            'testindicator': route.testindicator,
+            'dirmonitor': route.dirmonitor,
+            'defer': route.defer,
+            'zip_incoming': route.zip_incoming,
+            'zip_outgoing': route.zip_outgoing,
+            'desc': route.desc,
+            'routescript': getattr(route, 'routescript', None),
+            'rsrv1': route.rsrv1,
+            'rsrv2': route.rsrv2,
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'route': route_data
+        })
+    except RoutesModel.DoesNotExist:
+        return JsonResponse({'error': 'Route not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["PUT"])
+def admin_route_update(request, route_id):
+    """
+    Update a route
+    PUT /api/v1/admin/routes/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel, channel, partner as PartnerModel
+        
+        route = RoutesModel.objects.get(id=route_id)
+        data = json.loads(request.body)
+        
+        # Update fields
+        if 'idroute' in data:
+            route.idroute = data['idroute']
+        if 'seq' in data:
+            route.seq = data['seq']
+        if 'active' in data:
+            route.active = data['active']
+        if 'notindefaultrun' in data:
+            route.notindefaultrun = data['notindefaultrun']
+        
+        # Channels
+        if 'fromchannel_id' in data:
+            route.fromchannel = channel.objects.get(id=data['fromchannel_id']) if data['fromchannel_id'] else None
+        if 'tochannel_id' in data:
+            route.tochannel = channel.objects.get(id=data['tochannel_id']) if data['tochannel_id'] else None
+        
+        # EDI types
+        if 'fromeditype' in data:
+            route.fromeditype = data['fromeditype']
+        if 'frommessagetype' in data:
+            route.frommessagetype = data['frommessagetype']
+        if 'toeditype' in data:
+            route.toeditype = data['toeditype']
+        if 'tomessagetype' in data:
+            route.tomessagetype = data['tomessagetype']
+        
+        # Translation
+        if 'translateind' in data:
+            route.translateind = data['translateind']
+        if 'alt' in data:
+            route.alt = data['alt']
+        
+        # Partners
+        if 'frompartner_id' in data:
+            route.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id']) if data['frompartner_id'] else None
+        if 'topartner_id' in data:
+            route.topartner = PartnerModel.objects.get(idpartner=data['topartner_id']) if data['topartner_id'] else None
+        if 'frompartner_tochannel_id' in data:
+            route.frompartner_tochannel = PartnerModel.objects.get(idpartner=data['frompartner_tochannel_id']) if data['frompartner_tochannel_id'] else None
+        if 'topartner_tochannel_id' in data:
+            route.topartner_tochannel = PartnerModel.objects.get(idpartner=data['topartner_tochannel_id']) if data['topartner_tochannel_id'] else None
+        
+        # Other fields
+        if 'testindicator' in data:
+            route.testindicator = data['testindicator']
+        if 'dirmonitor' in data:
+            route.dirmonitor = data['dirmonitor']
+        if 'defer' in data:
+            route.defer = data['defer']
+        if 'zip_incoming' in data:
+            route.zip_incoming = data['zip_incoming']
+        if 'zip_outgoing' in data:
+            route.zip_outgoing = data['zip_outgoing']
+        if 'desc' in data:
+            route.desc = data['desc']
+        
+        route.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Route updated successfully'
+        })
+    except RoutesModel.DoesNotExist:
+        return JsonResponse({'error': 'Route not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_route_delete(request, route_id):
+    """
+    Delete a route
+    DELETE /api/v1/admin/routes/<id>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        
+        route = RoutesModel.objects.get(id=route_id)
+        route_idroute = route.idroute
+        route_seq = route.seq
+        
+        route.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Route {route_idroute} seq {route_seq} deleted successfully'
+        })
+    except RoutesModel.DoesNotExist:
+        return JsonResponse({'error': 'Route not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_route_toggle_active(request, route_id):
+    """
+    Toggle route active status
+    POST /api/v1/admin/routes/<id>/activate
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        
+        route = RoutesModel.objects.get(id=route_id)
+        route.active = not route.active
+        route.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Route {"activated" if route.active else "deactivated"} successfully',
+            'active': route.active
+        })
+    except RoutesModel.DoesNotExist:
+        return JsonResponse({'error': 'Route not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_route_clone(request, route_id):
+    """
+    Clone a route
+    POST /api/v1/admin/routes/<id>/clone
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        
+        route = RoutesModel.objects.get(id=route_id)
+        data = json.loads(request.body) if request.body else {}
+        
+        # Create a copy
+        new_route = RoutesModel()
+        new_route.idroute = data.get('new_idroute', f"{route.idroute}_copy")
+        new_route.seq = data.get('new_seq', route.seq)
+        new_route.active = False  # Cloned routes start as inactive
+        new_route.notindefaultrun = route.notindefaultrun
+        new_route.fromchannel = route.fromchannel
+        new_route.fromeditype = route.fromeditype
+        new_route.frommessagetype = route.frommessagetype
+        new_route.translateind = route.translateind
+        new_route.alt = route.alt
+        new_route.tochannel = route.tochannel
+        new_route.toeditype = route.toeditype
+        new_route.tomessagetype = route.tomessagetype
+        new_route.frompartner = route.frompartner
+        new_route.topartner = route.topartner
+        new_route.frompartner_tochannel = route.frompartner_tochannel
+        new_route.topartner_tochannel = route.topartner_tochannel
+        new_route.testindicator = route.testindicator
+        new_route.dirmonitor = False  # Don't clone dirmonitor setting
+        new_route.defer = route.defer
+        new_route.zip_incoming = route.zip_incoming
+        new_route.zip_outgoing = route.zip_outgoing
+        new_route.desc = route.desc
+        new_route.rsrv1 = route.rsrv1
+        new_route.rsrv2 = route.rsrv2
+        
+        new_route.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Route cloned successfully',
+            'route_id': new_route.id,
+            'idroute': new_route.idroute
+        })
+    except RoutesModel.DoesNotExist:
+        return JsonResponse({'error': 'Route not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["POST"])
+def admin_routes_export(request):
+    """
+    Export selected routes as a plugin
+    POST /api/v1/admin/routes/export
+    Body: {"route_ids": [1, 2, 3], "include_translations": true}
+    """
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        return JsonResponse({'error': 'Superuser access required'}, status=403)
+    
+    try:
+        from bots.models import routes as RoutesModel
+        from bots import pluglib
+        import tempfile
+        import os
+        
+        data = json.loads(request.body)
+        route_ids = data.get('route_ids', [])
+        include_translations = data.get('include_translations', True)
+        
+        if not route_ids:
+            return JsonResponse({'error': 'No routes selected'}, status=400)
+        
+        # Get routes queryset
+        routes_qs = RoutesModel.objects.filter(id__in=route_ids)
+        
+        if not routes_qs.exists():
+            return JsonResponse({'error': 'No routes found'}, status=404)
+        
+        # Create plugin
+        plugin_data = {'queryset': routes_qs}
+        if not include_translations:
+            plugin_data['notranslate'] = True
+        
+        # Generate filename
+        import time
+        filename = f"routes_plugin_{time.strftime('%Y%m%d%H%M%S')}.zip"
+        
+        # Create plugin using bots pluglib
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp:
+            pluglib.make_plugin(plugin_data, tmp.name)
+            
+            # Read file content
+            with open(tmp.name, 'rb') as f:
+                file_content = f.read()
+            
+            # Clean up temp file
+            os.unlink(tmp.name)
+        
+        # Return as download
+        response = HttpResponse(file_content, content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+        
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
