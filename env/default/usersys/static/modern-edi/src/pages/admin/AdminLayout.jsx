@@ -10,6 +10,7 @@ import {
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -62,6 +63,13 @@ export default function AdminLayout() {
               );
             })}
           </nav>
+          {/* Mailbox Folders Accordion */}
+          <div className="px-2 pb-4 border-t border-gray-200">
+            <div className="pt-4 pb-2">
+              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mailbox Folders</h3>
+            </div>
+            <MailboxAccordion />
+          </div>
         </div>
       </div>
 
@@ -71,25 +79,36 @@ export default function AdminLayout() {
           <div className="flex items-center h-16 px-4 border-b">
             <span className="text-xl font-bold text-indigo-600">Admin Dashboard</span>
           </div>
-          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <nav className="px-2 py-4 space-y-1">
+              {navigation.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                      isActive
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <item.icon className="mr-3 h-5 w-5" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+            {/* Mailbox Folders Accordion */}
+            <div className="flex-1 overflow-y-auto border-t border-gray-200">
+              <div className="px-2 pt-4 pb-2">
+                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mailbox Folders</h3>
+              </div>
+              <div className="px-2 pb-4">
+                <MailboxAccordion />
+              </div>
+            </div>
+          </div>
           <div className="flex-shrink-0 p-4 border-t">
             <button
               onClick={handleLogout}

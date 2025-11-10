@@ -26,8 +26,9 @@ import './App.css';
 function App() {
   return (
     <Routes>
-      {/* Modern EDI Interface */}
-      <Route path="/" element={<Layout />}>
+      {/* Modern EDI Interface - Redirect to Admin */}
+      <Route path="/" element={<Navigate to="/admin" replace />} />
+      <Route path="/old-dashboard" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="folder/:folderName" element={<FolderView />} />
       </Route>
