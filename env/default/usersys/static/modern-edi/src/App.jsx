@@ -11,6 +11,7 @@ import UserManagement from './pages/admin/UserManagement';
 import PermissionsManagement from './pages/admin/PermissionsManagement';
 import Analytics from './pages/admin/Analytics';
 import ActivityLog from './pages/admin/ActivityLog';
+import MailboxFolderView from './pages/admin/MailboxFolderView';
 
 // Partner Portal
 import PartnerPortalLayout from './pages/partner/PartnerPortalLayout';
@@ -41,6 +42,7 @@ function App() {
         <Route path="permissions" element={<PermissionsManagement />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="activity-logs" element={<ActivityLog />} />
+        <Route path="mailbox/:folderName" element={<MailboxFolderView />} />
       </Route>
 
       {/* Partner Portal */}

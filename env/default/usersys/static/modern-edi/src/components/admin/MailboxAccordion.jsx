@@ -1,15 +1,12 @@
-import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   InboxIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   CheckCircleIcon,
-  TrashIcon,
-  ChevronDownIcon,
-  ChevronUpIcon
+  TrashIcon
 } from '@heroicons/react/24/outline';
 import { useFolders } from '../../hooks/useTransactions';
-import MailboxFolderContent from './MailboxFolderContent';
 
 const folderIcons = {
   inbox: InboxIcon,
@@ -36,12 +33,8 @@ const folderBadgeColors = {
 };
 
 export default function MailboxAccordion() {
-  const [expandedFolder, setExpandedFolder] = useState(null);
+  const location = useLocation();
   const { data: folders, isLoading, error } = useFolders();
-
-  const toggleFolder = (folderName) => {
-    setExpandedFolder(expandedFolder === folderName ? null : folderName);
-  };
 
   if (isLoading) {
     return (
@@ -65,44 +58,29 @@ export default function MailboxAccordion() {
         const Icon = folderIcons[folder.name] || InboxIcon;
         const colorClass = folderColors[folder.name] || 'text-gray-600 bg-gray-50';
         const badgeColorClass = folderBadgeColors[folder.name] || 'bg-gray-500 text-white';
-        const isExpanded = expandedFolder === folder.name;
+        const folderPath = `/admin/mailbox/${folder.name}`;
+        const isActive = location.pathname === folderPath;
 
         return (
-          <div key={folder.name} className="border-b border-gray-200 last:border-b-0">
-            {/* Accordion Header */}
-            <button
-              onClick={() => toggleFolder(folder.name)}
-              className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                isExpanded
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <div className="flex items-center space-x-2 flex-1 min-w-0">
-                <div className={`flex-shrink-0 p-1.5 rounded ${colorClass}`}>
-                  <Icon className="h-4 w-4" />
-                </div>
-                <span className="capitalize truncate">{folder.display_name || folder.name}</span>
-                <span className={`flex-shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full ${badgeColorClass}`}>
-                  {folder.count}
-                </span>
+          <Link
+            key={folder.name}
+            to={folderPath}
+            className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              isActive
+                ? 'bg-indigo-50 text-indigo-700'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className={`flex-shrink-0 p-1.5 rounded ${colorClass}`}>
+                <Icon className="h-4 w-4" />
               </div>
-              <div className="flex-shrink-0 ml-2">
-                {isExpanded ? (
-                  <ChevronUpIcon className="h-4 w-4" />
-                ) : (
-                  <ChevronDownIcon className="h-4 w-4" />
-                )}
-              </div>
-            </button>
-
-            {/* Accordion Content */}
-            {isExpanded && (
-              <div className="mt-2 px-2 pb-2">
-                <MailboxFolderContent folderName={folder.name} />
-              </div>
-            )}
-          </div>
+              <span className="capitalize truncate">{folder.display_name || folder.name}</span>
+              <span className={`flex-shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full ${badgeColorClass}`}>
+                {folder.count}
+              </span>
+            </div>
+          </Link>
         );
       })}
     </div>
