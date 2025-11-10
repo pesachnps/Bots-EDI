@@ -66,5 +66,18 @@ urlpatterns = [
     # Translations Management
     path('translations', admin_views.admin_translations_list_or_create, name='admin_translations_list_create'),
     path('translations/<int:translation_id>', admin_views.admin_translation_detail_update_delete, name='admin_translation_detail'),
-]
+    
+    # Confirm Rules Management
+    path('confirmrules', admin_views.admin_confirmrules_list_or_create, name='admin_confirmrules_list_create'),
+    path('confirmrules/<int:rule_id>', admin_views.admin_confirmrule_detail_update_delete, name='admin_confirmrule_detail'),
+    
+    # Code Lists Management
+    path('codelists', admin_views.admin_codelists_list, name='admin_codelists_list'),
+    path('codelists/<str:ccodeid>', admin_views.admin_codelist_detail, name='admin_codelist_detail'),
+    path('codelists/<str:ccodeid>/codes', admin_views.admin_codelist_codes_list_or_create, name='admin_codelist_codes'),
+    path('codelists/<str:ccodeid>/codes/<int:code_id>', admin_views.admin_codelist_code_update_delete, name='admin_codelist_code_detail'),
+    
+    # Counters Management
+    path('counters', admin_views.admin_counters_list, name='admin_counters_list'),
+    path('counters/<str:domein>', admin_views.admin_counter_update, name='admin_counter_update'),
 ]

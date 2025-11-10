@@ -2292,3 +2292,561 @@ def admin_channel_types(request):
     except Exception as e:
         import traceback
         return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+# ============================================================================
+# CONFIRM RULES MANAGEMENT
+# ============================================================================
+
+@require_http_methods(["GET", "POST"])
+def admin_confirmrules_list_or_create(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    if request.method == "GET":
+        return admin_confirmrules_list(request)
+    else:
+        return admin_confirmrule_create(request)
+
+
+@require_http_methods(["GET"])
+def admin_confirmrules_list(request):
+    """
+    List all confirm rules with filtering
+    GET /api/v1/admin/confirmrules?confirmtype=&active=&page=1
+    """
+    try:
+        from bots.models import confirmrule
+        
+        # Get query parameters
+        confirmtype = request.GET.get('confirmtype', '').strip()
+        active = request.GET.get('active', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 50))
+        
+        # Build query
+        rules = confirmrule.objects.select_related('frompartner', 'topartner', 'idchannel').all()
+        
+        if confirmtype:
+            rules = rules.filter(confirmtype=confirmtype)
+        
+        if active:
+            rules = rules.filter(active=(active.lower() == 'true'))
+        
+        # Order by confirmtype, ruletype
+        rules = rules.order_by('confirmtype', 'ruletype')
+        
+        # Paginate
+        paginator = Paginator(rules, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize rules
+        rules_data = []
+        for rule in page_obj:
+            rules_data.append({
+                'id': rule.id,
+                'active': rule.active,
+                'confirmtype': rule.confirmtype,
+                'ruletype': rule.ruletype,
+                'negativerule': rule.negativerule,
+                'frompartner': {
+                    'idpartner': rule.frompartner.idpartner,
+                    'name': rule.frompartner.name,
+                } if rule.frompartner else None,
+                'topartner': {
+                    'idpartner': rule.topartner.idpartner,
+                    'name': rule.topartner.name,
+                } if rule.topartner else None,
+                'idroute': rule.idroute,
+                'idchannel': {
+                    'idchannel': rule.idchannel.idchannel,
+                    'inorout': rule.idchannel.inorout,
+                } if rule.idchannel else None,
+                'editype': rule.editype,
+                'messagetype': rule.messagetype,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'rules': rules_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_confirmrule_create(request):
+    try:
+        from bots.models import confirmrule, partner as PartnerModel, channel
+        
+        data = json.loads(request.body)
+        
+        rule = confirmrule()
+        rule.active = data.get('active', False)
+        rule.confirmtype = data.get('confirmtype', '')
+        rule.ruletype = data.get('ruletype', '')
+        rule.negativerule = data.get('negativerule', False)
+        rule.idroute = data.get('idroute', '')
+        rule.editype = data.get('editype', '')
+        rule.messagetype = data.get('messagetype', '')
+        
+        if data.get('frompartner_id'):
+            rule.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id'])
+        if data.get('topartner_id'):
+            rule.topartner = PartnerModel.objects.get(idpartner=data['topartner_id'])
+        if data.get('idchannel'):
+            rule.idchannel = channel.objects.get(idchannel=data['idchannel'])
+        
+        rule.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Confirm rule created successfully',
+            'rule_id': rule.id
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["GET", "PUT", "DELETE"])
+def admin_confirmrule_detail_update_delete(request, rule_id):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    if request.method == "GET":
+        return admin_confirmrule_detail(request, rule_id)
+    elif request.method == "PUT":
+        return admin_confirmrule_update(request, rule_id)
+    else:
+        return admin_confirmrule_delete(request, rule_id)
+
+
+@require_http_methods(["GET"])
+def admin_confirmrule_detail(request, rule_id):
+    try:
+        from bots.models import confirmrule
+        
+        rule = confirmrule.objects.select_related('frompartner', 'topartner', 'idchannel').get(id=rule_id)
+        
+        return JsonResponse({
+            'success': True,
+            'rule': {
+                'id': rule.id,
+                'active': rule.active,
+                'confirmtype': rule.confirmtype,
+                'ruletype': rule.ruletype,
+                'negativerule': rule.negativerule,
+                'frompartner': {
+                    'idpartner': rule.frompartner.idpartner,
+                    'name': rule.frompartner.name,
+                } if rule.frompartner else None,
+                'topartner': {
+                    'idpartner': rule.topartner.idpartner,
+                    'name': rule.topartner.name,
+                } if rule.topartner else None,
+                'idroute': rule.idroute,
+                'idchannel': {
+                    'idchannel': rule.idchannel.idchannel,
+                    'inorout': rule.idchannel.inorout,
+                } if rule.idchannel else None,
+                'editype': rule.editype,
+                'messagetype': rule.messagetype,
+            }
+        })
+    except confirmrule.DoesNotExist:
+        return JsonResponse({'error': 'Confirm rule not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["PUT"])
+def admin_confirmrule_update(request, rule_id):
+    try:
+        from bots.models import confirmrule, partner as PartnerModel, channel
+        
+        rule = confirmrule.objects.get(id=rule_id)
+        data = json.loads(request.body)
+        
+        if 'active' in data:
+            rule.active = data['active']
+        if 'confirmtype' in data:
+            rule.confirmtype = data['confirmtype']
+        if 'ruletype' in data:
+            rule.ruletype = data['ruletype']
+        if 'negativerule' in data:
+            rule.negativerule = data['negativerule']
+        if 'idroute' in data:
+            rule.idroute = data['idroute']
+        if 'editype' in data:
+            rule.editype = data['editype']
+        if 'messagetype' in data:
+            rule.messagetype = data['messagetype']
+        
+        if 'frompartner_id' in data:
+            rule.frompartner = PartnerModel.objects.get(idpartner=data['frompartner_id']) if data['frompartner_id'] else None
+        if 'topartner_id' in data:
+            rule.topartner = PartnerModel.objects.get(idpartner=data['topartner_id']) if data['topartner_id'] else None
+        if 'idchannel' in data:
+            rule.idchannel = channel.objects.get(idchannel=data['idchannel']) if data['idchannel'] else None
+        
+        rule.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Confirm rule updated successfully'
+        })
+    except confirmrule.DoesNotExist:
+        return JsonResponse({'error': 'Confirm rule not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_confirmrule_delete(request, rule_id):
+    try:
+        from bots.models import confirmrule
+        
+        rule = confirmrule.objects.get(id=rule_id)
+        rule.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Confirm rule deleted successfully'
+        })
+    except confirmrule.DoesNotExist:
+        return JsonResponse({'error': 'Confirm rule not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+# ============================================================================
+# CODE LISTS MANAGEMENT
+# ============================================================================
+
+@require_http_methods(["GET"])
+def admin_codelists_list(request):
+    """
+    List all code list types (ccodetrigger)
+    GET /api/v1/admin/codelists
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ccodetrigger, ccode
+        
+        # Get all code list types with counts
+        codelists = []
+        for trigger in ccodetrigger.objects.all().order_by('ccodeid'):
+            code_count = ccode.objects.filter(ccodeid=trigger).count()
+            codelists.append({
+                'ccodeid': trigger.ccodeid,
+                'description': trigger.ccodeid_desc or '',
+                'code_count': code_count,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'codelists': codelists
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_codelist_detail(request, ccodeid):
+    """
+    Get details of a specific code list type
+    GET /api/v1/admin/codelists/<ccodeid>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ccodetrigger
+        
+        trigger = ccodetrigger.objects.get(ccodeid=ccodeid)
+        
+        return JsonResponse({
+            'success': True,
+            'codelist': {
+                'ccodeid': trigger.ccodeid,
+                'description': trigger.ccodeid_desc or '',
+            }
+        })
+    except ccodetrigger.DoesNotExist:
+        return JsonResponse({'error': 'Code list not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET", "POST"])
+def admin_codelist_codes_list_or_create(request, ccodeid):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    if request.method == "GET":
+        return admin_codelist_codes_list(request, ccodeid)
+    else:
+        return admin_codelist_code_create(request, ccodeid)
+
+
+@require_http_methods(["GET"])
+def admin_codelist_codes_list(request, ccodeid):
+    """
+    List all codes for a specific code list
+    GET /api/v1/admin/codelists/<ccodeid>/codes?search=&page=1
+    """
+    try:
+        from bots.models import ccode, ccodetrigger
+        
+        # Verify code list exists
+        trigger = ccodetrigger.objects.get(ccodeid=ccodeid)
+        
+        # Get query parameters
+        search = request.GET.get('search', '').strip()
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 100))
+        
+        # Build query
+        codes = ccode.objects.filter(ccodeid=trigger)
+        
+        if search:
+            codes = codes.filter(
+                Q(leftcode__icontains=search) |
+                Q(rightcode__icontains=search) |
+                Q(attr1__icontains=search)
+            )
+        
+        # Order by leftcode
+        codes = codes.order_by('leftcode', 'rightcode')
+        
+        # Paginate
+        paginator = Paginator(codes, per_page)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize codes
+        codes_data = []
+        for code in page_obj:
+            codes_data.append({
+                'id': code.id,
+                'leftcode': code.leftcode,
+                'rightcode': code.rightcode,
+                'attr1': code.attr1,
+                'attr2': code.attr2,
+                'attr3': code.attr3,
+                'attr4': code.attr4,
+                'attr5': code.attr5,
+                'attr6': code.attr6,
+                'attr7': code.attr7,
+                'attr8': code.attr8,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'ccodeid': ccodeid,
+            'codes': codes_data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': paginator.count,
+                'pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+        })
+    except ccodetrigger.DoesNotExist:
+        return JsonResponse({'error': 'Code list not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["POST"])
+def admin_codelist_code_create(request, ccodeid):
+    try:
+        from bots.models import ccode, ccodetrigger
+        
+        trigger = ccodetrigger.objects.get(ccodeid=ccodeid)
+        data = json.loads(request.body)
+        
+        code = ccode()
+        code.ccodeid = trigger
+        code.leftcode = data.get('leftcode', '')
+        code.rightcode = data.get('rightcode', '')
+        code.attr1 = data.get('attr1', '')
+        code.attr2 = data.get('attr2', '')
+        code.attr3 = data.get('attr3', '')
+        code.attr4 = data.get('attr4', '')
+        code.attr5 = data.get('attr5', '')
+        code.attr6 = data.get('attr6', '')
+        code.attr7 = data.get('attr7', '')
+        code.attr8 = data.get('attr8', '')
+        
+        code.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Code created successfully',
+            'code_id': code.id
+        })
+    except ccodetrigger.DoesNotExist:
+        return JsonResponse({'error': 'Code list not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["PUT", "DELETE"])
+def admin_codelist_code_update_delete(request, ccodeid, code_id):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    if request.method == "PUT":
+        return admin_codelist_code_update(request, ccodeid, code_id)
+    else:
+        return admin_codelist_code_delete(request, ccodeid, code_id)
+
+
+@require_http_methods(["PUT"])
+def admin_codelist_code_update(request, ccodeid, code_id):
+    try:
+        from bots.models import ccode
+        
+        code = ccode.objects.get(id=code_id, ccodeid__ccodeid=ccodeid)
+        data = json.loads(request.body)
+        
+        if 'leftcode' in data:
+            code.leftcode = data['leftcode']
+        if 'rightcode' in data:
+            code.rightcode = data['rightcode']
+        if 'attr1' in data:
+            code.attr1 = data['attr1']
+        if 'attr2' in data:
+            code.attr2 = data['attr2']
+        if 'attr3' in data:
+            code.attr3 = data['attr3']
+        if 'attr4' in data:
+            code.attr4 = data['attr4']
+        if 'attr5' in data:
+            code.attr5 = data['attr5']
+        if 'attr6' in data:
+            code.attr6 = data['attr6']
+        if 'attr7' in data:
+            code.attr7 = data['attr7']
+        if 'attr8' in data:
+            code.attr8 = data['attr8']
+        
+        code.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Code updated successfully'
+        })
+    except ccode.DoesNotExist:
+        return JsonResponse({'error': 'Code not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["DELETE"])
+def admin_codelist_code_delete(request, ccodeid, code_id):
+    try:
+        from bots.models import ccode
+        
+        code = ccode.objects.get(id=code_id, ccodeid__ccodeid=ccodeid)
+        code.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Code deleted successfully'
+        })
+    except ccode.DoesNotExist:
+        return JsonResponse({'error': 'Code not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+# ============================================================================
+# COUNTERS MANAGEMENT
+# ============================================================================
+
+@require_http_methods(["GET"])
+def admin_counters_list(request):
+    """
+    List all counters
+    GET /api/v1/admin/counters
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import uniek
+        
+        counters = uniek.objects.all().order_by('domein')
+        
+        counters_data = []
+        for counter in counters:
+            counters_data.append({
+                'domein': counter.domein,
+                'nummer': counter.nummer,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'counters': counters_data
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["PUT"])
+def admin_counter_update(request, domein):
+    """
+    Update a counter value
+    PUT /api/v1/admin/counters/<domein>
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import uniek
+        
+        counter = uniek.objects.get(domein=domein)
+        data = json.loads(request.body)
+        
+        if 'nummer' in data:
+            counter.nummer = int(data['nummer'])
+            counter.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Counter updated successfully',
+            'counter': {
+                'domein': counter.domein,
+                'nummer': counter.nummer,
+            }
+        })
+    except uniek.DoesNotExist:
+        return JsonResponse({'error': 'Counter not found'}, status=404)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
