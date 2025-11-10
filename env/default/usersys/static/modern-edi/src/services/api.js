@@ -33,8 +33,8 @@ api.interceptors.response.use(
       const { status, data } = error.response;
       
       if (status === 401) {
-        // Unauthorized - redirect to login
-        window.location.href = '/login/';
+        // Unauthorized - redirect to admin login
+        window.location.href = '/admin/login';
       } else if (status === 403) {
         console.error('Permission denied:', data.error);
       } else if (status === 429) {

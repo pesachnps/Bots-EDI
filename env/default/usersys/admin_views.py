@@ -3249,6 +3249,7 @@ def admin_logs_list(request):
     try:
         import os
         import botsglobal
+        from datetime import datetime
         
         log_dir = botsglobal.ini.get('directories', 'logging')
         logs = []
@@ -3258,15 +3259,81 @@ def admin_logs_list(request):
                 if file.endswith('.log'):
                     file_path = os.path.join(root, file)
                     size = os.path.getsize(file_path)
+                    mtime = os.path.getmtime(file_path)
                     logs.append({
                         'name': file,
                         'path': os.path.relpath(file_path, log_dir),
+                        'full_path': file_path,
                         'size': size,
+                        'modified': datetime.fromtimestamp(mtime).isoformat(),
                     })
+        
+        # Sort by modified time, newest first
+        logs.sort(key=lambda x: x['modified'], reverse=True)
         
         return JsonResponse({
             'success': True,
             'logs': logs
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_log_content(request):
+    """
+    Read log file content
+    GET /api/v1/admin/logs/content?path=engine.log&lines=100&offset=0
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        import os
+        import botsglobal
+        
+        log_path = request.GET.get('path', '').strip()
+        lines = int(request.GET.get('lines', 100))
+        offset = int(request.GET.get('offset', 0))
+        tail = request.GET.get('tail', 'false').lower() == 'true'
+        
+        if not log_path:
+            return JsonResponse({'error': 'Log path required'}, status=400)
+        
+        log_dir = botsglobal.ini.get('directories', 'logging')
+        full_path = os.path.join(log_dir, log_path)
+        
+        # Security check: ensure path is within log directory
+        if not os.path.abspath(full_path).startswith(os.path.abspath(log_dir)):
+            return JsonResponse({'error': 'Invalid path'}, status=400)
+        
+        if not os.path.exists(full_path):
+            return JsonResponse({'error': 'Log file not found'}, status=404)
+        
+        # Read file
+        with open(full_path, 'r', encoding='utf-8', errors='replace') as f:
+            if tail:
+                # Read last N lines
+                all_lines = f.readlines()
+                content_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
+            else:
+                # Read with offset
+                all_lines = f.readlines()
+                content_lines = all_lines[offset:offset+lines]
+            
+            content = ''.join(content_lines)
+        
+        file_size = os.path.getsize(full_path)
+        total_lines = len(all_lines) if 'all_lines' in locals() else 0
+        
+        return JsonResponse({
+            'success': True,
+            'content': content,
+            'size': file_size,
+            'total_lines': total_lines,
+            'lines_returned': len(content_lines),
+            'offset': offset,
         })
     except Exception as e:
         import traceback
@@ -3282,6 +3349,7 @@ def admin_engine_run(request):
     """
     Run the bots engine
     POST /api/v1/admin/engine/run
+    Optional body: {"routes": ["route1", "route2"]} to run specific routes
     """
     if not request.user.is_authenticated or not request.user.is_staff:
         return JsonResponse({'error': 'Admin access required'}, status=403)
@@ -3289,8 +3357,22 @@ def admin_engine_run(request):
     try:
         import subprocess
         
+        # Parse optional route selection from request body
+        routes = []
+        if request.body:
+            try:
+                data = json.loads(request.body)
+                routes = data.get('routes', [])
+            except (json.JSONDecodeError, ValueError):
+                pass
+        
+        # Build command with optional route filter
+        command = ['bots-engine']
+        if routes:
+            command.extend(['--new', '--route=' + ','.join(routes)])
+        
         result = subprocess.run(
-            ['bots-engine'],
+            command,
             capture_output=True,
             text=True,
             timeout=300
@@ -3301,7 +3383,8 @@ def admin_engine_run(request):
             'message': 'Engine run completed',
             'output': result.stdout,
             'errors': result.stderr,
-            'exit_code': result.returncode
+            'exit_code': result.returncode,
+            'routes': routes if routes else 'all'
         })
     except subprocess.TimeoutExpired:
         return JsonResponse({'error': 'Engine run timed out'}, status=500)

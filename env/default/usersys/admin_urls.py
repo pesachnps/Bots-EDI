@@ -100,6 +100,7 @@ urlpatterns = [
     # File Management
     path('files/browse', admin_views.admin_files_browse, name='admin_files_browse'),
     path('logs', admin_views.admin_logs_list, name='admin_logs_list'),
+    path('logs/content', admin_views.admin_log_content, name='admin_log_content'),
     
     # Operations
     path('engine/run', admin_views.admin_engine_run, name='admin_engine_run'),
