@@ -22,9 +22,11 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   Cog6ToothIcon,
-  WrenchScrewdriverIcon
+  WrenchScrewdriverIcon,
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline';
-import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -68,8 +70,11 @@ export default function AdminLayout() {
       title: 'Transactions',
       icon: InboxIcon,
       items: [
-        { name: 'Incoming', href: '/admin/incoming', icon: InboxIcon },
-        { name: 'Outgoing', href: '/admin/outgoing', icon: PaperAirplaneIcon },
+        { name: 'Inbox', href: '/admin/mailbox/inbox', icon: InboxIcon },
+        { name: 'Received', href: '/admin/mailbox/received', icon: ArrowDownTrayIcon },
+        { name: 'Outbox', href: '/admin/mailbox/outbox', icon: ArrowUpTrayIcon },
+        { name: 'Sent', href: '/admin/mailbox/sent', icon: CheckCircleIcon },
+        { name: 'Deleted', href: '/admin/mailbox/deleted', icon: TrashIcon },
       ]
     },
     {
@@ -181,13 +186,6 @@ export default function AdminLayout() {
               );
             })}
           </nav>
-          {/* Mailbox Folders Accordion */}
-          <div className="px-2 pb-4 border-t border-gray-200">
-            <div className="pt-4 pb-2">
-              <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mailbox Folders</h3>
-            </div>
-            <MailboxAccordion />
-          </div>
         </div>
       </div>
 
@@ -257,15 +255,6 @@ export default function AdminLayout() {
                 );
               })}
             </nav>
-            {/* Mailbox Folders Accordion */}
-            <div className="flex-1 overflow-y-auto border-t border-gray-200">
-              <div className="px-2 pt-4 pb-2">
-                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mailbox Folders</h3>
-              </div>
-              <div className="px-2 pb-4">
-                <MailboxAccordion />
-              </div>
-            </div>
           </div>
           <div className="flex-shrink-0 p-4 border-t">
             <button
