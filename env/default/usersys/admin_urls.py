@@ -86,4 +86,17 @@ urlpatterns = [
     path('transactions/outgoing', admin_views.admin_transactions_outgoing, name='admin_transactions_outgoing'),
     path('transactions/<int:ta_id>', admin_views.admin_transaction_detail, name='admin_transaction_detail'),
     path('transactions/<int:ta_id>/resend', admin_views.admin_transaction_resend, name='admin_transaction_resend'),
+    path('transactions/<int:ta_id>/lineage', admin_views.admin_transaction_lineage, name='admin_transaction_lineage'),
+    
+    # File Management
+    path('files/browse', admin_views.admin_files_browse, name='admin_files_browse'),
+    path('logs', admin_views.admin_logs_list, name='admin_logs_list'),
+    
+    # Operations
+    path('engine/run', admin_views.admin_engine_run, name='admin_engine_run'),
+    path('engine/status', admin_views.admin_engine_status, name='admin_engine_status'),
+    path('cleanup/execute', admin_views.admin_cleanup_execute, name='admin_cleanup_execute'),
+    
+    # System
+    path('system/info', admin_views.admin_system_info, name='admin_system_info'),
 ]

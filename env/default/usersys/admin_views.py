@@ -3098,3 +3098,266 @@ def admin_transaction_resend(request, ta_id):
     except Exception as e:
         import traceback
         return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=400)
+
+
+@require_http_methods(["GET"])
+def admin_transaction_lineage(request, ta_id):
+    """
+    Get transaction lineage (parent/child tree)
+    GET /api/v1/admin/transactions/<ta_id>/lineage
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        
+        def get_tree(idta, level=0, visited=None):
+            if visited is None:
+                visited = set()
+            if idta in visited or level > 10:
+                return None
+            visited.add(idta)
+            
+            try:
+                tx = ta.objects.get(idta=idta)
+                node = {
+                    'idta': tx.idta,
+                    'filename': tx.filename,
+                    'editype': tx.editype,
+                    'status': tx.status,
+                    'ts': tx.ts.isoformat(),
+                    'children': []
+                }
+                
+                # Get children
+                children = ta.objects.filter(parent=idta)
+                for child in children:
+                    child_node = get_tree(child.idta, level+1, visited)
+                    if child_node:
+                        node['children'].append(child_node)
+                
+                return node
+            except ta.DoesNotExist:
+                return None
+        
+        lineage = get_tree(ta_id)
+        
+        return JsonResponse({
+            'success': True,
+            'lineage': lineage
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+# ============================================================================
+# FILE MANAGEMENT
+# ============================================================================
+
+@require_http_methods(["GET"])
+def admin_files_browse(request):
+    """
+    Browse files in bots directories
+    GET /api/v1/admin/files/browse?path=data
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        import os
+        import botsglobal
+        
+        path = request.GET.get('path', 'data').strip()
+        base_dir = botsglobal.ini.get('directories', 'data')
+        full_path = os.path.join(base_dir, path)
+        
+        if not os.path.exists(full_path):
+            return JsonResponse({'error': 'Path not found'}, status=404)
+        
+        files = []
+        dirs = []
+        
+        for item in os.listdir(full_path):
+            item_path = os.path.join(full_path, item)
+            if os.path.isdir(item_path):
+                dirs.append({'name': item, 'type': 'directory'})
+            else:
+                size = os.path.getsize(item_path)
+                files.append({
+                    'name': item,
+                    'type': 'file',
+                    'size': size,
+                })
+        
+        return JsonResponse({
+            'success': True,
+            'path': path,
+            'directories': dirs,
+            'files': files
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_logs_list(request):
+    """
+    List log files
+    GET /api/v1/admin/logs
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        import os
+        import botsglobal
+        
+        log_dir = botsglobal.ini.get('directories', 'logging')
+        logs = []
+        
+        for root, dirs, files in os.walk(log_dir):
+            for file in files:
+                if file.endswith('.log'):
+                    file_path = os.path.join(root, file)
+                    size = os.path.getsize(file_path)
+                    logs.append({
+                        'name': file,
+                        'path': os.path.relpath(file_path, log_dir),
+                        'size': size,
+                    })
+        
+        return JsonResponse({
+            'success': True,
+            'logs': logs
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+# ============================================================================
+# OPERATIONS
+# ============================================================================
+
+@require_http_methods(["POST"])
+def admin_engine_run(request):
+    """
+    Run the bots engine
+    POST /api/v1/admin/engine/run
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        import subprocess
+        
+        result = subprocess.run(
+            ['bots-engine'],
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Engine run completed',
+            'output': result.stdout,
+            'errors': result.stderr,
+            'exit_code': result.returncode
+        })
+    except subprocess.TimeoutExpired:
+        return JsonResponse({'error': 'Engine run timed out'}, status=500)
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+@require_http_methods(["GET"])
+def admin_engine_status(request):
+    """
+    Get engine status
+    GET /api/v1/admin/engine/status
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import mutex
+        
+        # Check if engine is running by looking for mutex
+        running = mutex.objects.filter(mutexk__gt=0).exists()
+        
+        return JsonResponse({
+            'success': True,
+            'running': running
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': True,
+            'running': False
+        })
+
+
+@require_http_methods(["POST"])
+def admin_cleanup_execute(request):
+    """
+    Execute cleanup
+    POST /api/v1/admin/cleanup/execute
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        from bots.models import ta
+        from datetime import datetime, timedelta
+        
+        data = json.loads(request.body)
+        days = int(data.get('days', 30))
+        
+        cutoff = datetime.now() - timedelta(days=days)
+        deleted = ta.objects.filter(ts__lt=cutoff).delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Deleted {deleted[0]} transactions',
+            'count': deleted[0]
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
+
+
+# ============================================================================
+# SYSTEM
+# ============================================================================
+
+@require_http_methods(["GET"])
+def admin_system_info(request):
+    """
+    Get system information
+    GET /api/v1/admin/system/info
+    """
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Admin access required'}, status=403)
+    
+    try:
+        import sys
+        import platform
+        import botsglobal
+        from django.conf import settings
+        
+        return JsonResponse({
+            'success': True,
+            'system': {
+                'python_version': sys.version,
+                'bots_version': getattr(botsglobal, 'version', 'unknown'),
+                'platform': platform.platform(),
+                'database': settings.DATABASES['default']['ENGINE'],
+            }
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({'error': str(e), 'traceback': traceback.format_exc()}, status=500)
