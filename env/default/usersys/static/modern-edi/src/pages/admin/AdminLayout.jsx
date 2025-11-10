@@ -18,35 +18,90 @@ import {
   ComputerDesktopIcon,
   PlayIcon,
   FolderIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  Cog6ToothIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline';
 import MailboxAccordion from '../../components/admin/MailboxAccordion';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({
+    configuration: true,
+    transactions: true,
+    operations: true,
+    administration: false
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
-  const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Partners', href: '/admin/partners', icon: UsersIcon },
-    { name: 'Routes', href: '/admin/routes', icon: MapIcon },
-    { name: 'Channels', href: '/admin/channels', icon: HomeIcon },
-    { name: 'Translations', href: '/admin/translations', icon: HomeIcon },
-    { name: 'Confirm Rules', href: '/admin/confirmrules', icon: CheckCircleIcon },
-    { name: 'Code Lists', href: '/admin/codelists', icon: TableCellsIcon },
-    { name: 'Counters', href: '/admin/counters', icon: HashtagIcon },
-    { name: 'Incoming', href: '/admin/incoming', icon: InboxIcon },
-    { name: 'Outgoing', href: '/admin/outgoing', icon: PaperAirplaneIcon },
-    { name: 'System', href: '/admin/system', icon: ComputerDesktopIcon },
-    { name: 'Engine', href: '/admin/engine', icon: PlayIcon },
-    { name: 'Files', href: '/admin/files', icon: FolderIcon },
-    { name: 'Logs', href: '/admin/logs', icon: DocumentTextIcon },
-    { name: 'Users', href: '/admin/users', icon: UsersIcon },
-    { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
-    { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
-    { name: 'Activity Logs', href: '/admin/activity-logs', icon: ClipboardDocumentListIcon },
+  const navigationSections = [
+    {
+      name: 'Dashboard',
+      href: '/admin',
+      icon: HomeIcon,
+      standalone: true
+    },
+    {
+      name: 'Partners',
+      href: '/admin/partners',
+      icon: UsersIcon,
+      standalone: true
+    },
+    {
+      key: 'configuration',
+      title: 'Configuration',
+      icon: Cog6ToothIcon,
+      items: [
+        { name: 'Routes', href: '/admin/routes', icon: MapIcon },
+        { name: 'Channels', href: '/admin/channels', icon: HomeIcon },
+        { name: 'Translations', href: '/admin/translations', icon: DocumentTextIcon },
+        { name: 'Confirm Rules', href: '/admin/confirmrules', icon: CheckCircleIcon },
+        { name: 'Code Lists', href: '/admin/codelists', icon: TableCellsIcon },
+        { name: 'Counters', href: '/admin/counters', icon: HashtagIcon },
+      ]
+    },
+    {
+      key: 'transactions',
+      title: 'Transactions',
+      icon: InboxIcon,
+      items: [
+        { name: 'Incoming', href: '/admin/incoming', icon: InboxIcon },
+        { name: 'Outgoing', href: '/admin/outgoing', icon: PaperAirplaneIcon },
+      ]
+    },
+    {
+      key: 'operations',
+      title: 'Operations',
+      icon: WrenchScrewdriverIcon,
+      items: [
+        { name: 'Engine', href: '/admin/engine', icon: PlayIcon },
+        { name: 'Files', href: '/admin/files', icon: FolderIcon },
+        { name: 'Logs', href: '/admin/logs', icon: DocumentTextIcon },
+        { name: 'System', href: '/admin/system', icon: ComputerDesktopIcon },
+      ]
+    },
+    {
+      key: 'administration',
+      title: 'Administration',
+      icon: ShieldCheckIcon,
+      items: [
+        { name: 'Users', href: '/admin/users', icon: UsersIcon },
+        { name: 'Permissions', href: '/admin/permissions', icon: ShieldCheckIcon },
+        { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
+        { name: 'Activity Logs', href: '/admin/activity-logs', icon: ClipboardDocumentListIcon },
+      ]
+    }
   ];
+
+  const toggleSection = (key) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   const handleLogout = () => {
     // Logout logic
@@ -65,23 +120,64 @@ export default function AdminLayout() {
               <XMarkIcon className="h-6 w-6" />
             </button>
           </div>
-          <nav className="flex-1 px-2 py-4 space-y-1">
-            {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
+          <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+            {navigationSections.map((section) => {
+              if (section.standalone) {
+                const isActive = location.pathname === section.href;
+                return (
+                  <Link
+                    key={section.name}
+                    to={section.href}
+                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                      isActive
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <section.icon className="mr-3 h-5 w-5" />
+                    {section.name}
+                  </Link>
+                );
+              }
+
               return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
-                </Link>
+                <div key={section.key} className="space-y-1">
+                  <button
+                    onClick={() => toggleSection(section.key)}
+                    className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                  >
+                    <section.icon className="mr-3 h-5 w-5" />
+                    <span className="flex-1 text-left">{section.title}</span>
+                    {expandedSections[section.key] ? (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    ) : (
+                      <ChevronRightIcon className="h-4 w-4" />
+                    )}
+                  </button>
+                  {expandedSections[section.key] && (
+                    <div className="ml-4 space-y-1">
+                      {section.items.map((item) => {
+                        const isActive = location.pathname === item.href;
+                        return (
+                          <Link
+                            key={item.name}
+                            to={item.href}
+                            className={`flex items-center px-3 py-2 text-sm rounded-md ${
+                              isActive
+                                ? 'bg-indigo-100 text-indigo-700 font-medium'
+                                : 'text-gray-600 hover:bg-gray-100'
+                            }`}
+                            onClick={() => setSidebarOpen(false)}
+                          >
+                            <item.icon className="mr-3 h-4 w-4" />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
@@ -102,22 +198,62 @@ export default function AdminLayout() {
             <span className="text-xl font-bold text-indigo-600">Admin Dashboard</span>
           </div>
           <div className="flex-1 flex flex-col overflow-hidden">
-            <nav className="px-2 py-4 space-y-1">
-              {navigation.map((item) => {
-                const isActive = location.pathname === item.href;
+            <nav className="px-2 py-4 space-y-1 overflow-y-auto">
+              {navigationSections.map((section) => {
+                if (section.standalone) {
+                  const isActive = location.pathname === section.href;
+                  return (
+                    <Link
+                      key={section.name}
+                      to={section.href}
+                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                        isActive
+                          ? 'bg-indigo-100 text-indigo-700'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <section.icon className="mr-3 h-5 w-5" />
+                      {section.name}
+                    </Link>
+                  );
+                }
+
                 return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                      isActive
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.name}
-                  </Link>
+                  <div key={section.key} className="space-y-1">
+                    <button
+                      onClick={() => toggleSection(section.key)}
+                      className="flex items-center w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100"
+                    >
+                      <section.icon className="mr-3 h-5 w-5" />
+                      <span className="flex-1 text-left">{section.title}</span>
+                      {expandedSections[section.key] ? (
+                        <ChevronDownIcon className="h-4 w-4" />
+                      ) : (
+                        <ChevronRightIcon className="h-4 w-4" />
+                      )}
+                    </button>
+                    {expandedSections[section.key] && (
+                      <div className="ml-4 space-y-1">
+                        {section.items.map((item) => {
+                          const isActive = location.pathname === item.href;
+                          return (
+                            <Link
+                              key={item.name}
+                              to={item.href}
+                              className={`flex items-center px-3 py-2 text-sm rounded-md ${
+                                isActive
+                                  ? 'bg-indigo-100 text-indigo-700 font-medium'
+                                  : 'text-gray-600 hover:bg-gray-100'
+                              }`}
+                            >
+                              <item.icon className="mr-3 h-4 w-4" />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </nav>
