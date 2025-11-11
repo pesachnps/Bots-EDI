@@ -25,23 +25,31 @@ if os.path.sep not in BOTSSYS:
 HOSTNAME = platform.node()
 
 # *******settings for sending bots error reports via email**********************************
+# Get email from environment variable, fallback to default
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', f"{BOTSENV}@{HOSTNAME}")
+
 MANAGERS = (
     # bots will send error reports to the MANAGERS
-    ('name_manager', 'adress@test.com'),
+    ('EDI Manager', DEFAULT_FROM_EMAIL),
 )
-EMAIL_HOST = 'localhost'    # Default: 'localhost'
-EMAIL_PORT = '25'           # Default: 25
-EMAIL_USE_TLS = False       # Default: False
-EMAIL_HOST_USER = ""        # Default: '' Username to use for the SMTP server defined in EMAIL_HOST.
-EMAIL_HOST_PASSWORD = ""    # Default: '' PASSWORD to use for the SMTP server defined in EMAIL_HOST.
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '25'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 # If EMAIL_HOST_USER is empty, Django won't attempt authentication.
-SERVER_EMAIL = f"{BOTSENV}@{HOSTNAME}"  # Sender of bots error reports. Default: 'root@localhost'
 # EMAIL_SUBJECT_PREFIX = ''   # This is prepended on email subject.
 
-# *********Email configuration for Admin Dashboard (development)*************************
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development - prints emails to console
-DEFAULT_FROM_EMAIL = 'EDI Admin <noreply@example.com>'  # Sender for admin dashboard emails
-SITE_URL = 'http://localhost:8080'  # Base URL for password reset links
+# *********Email configuration for Admin Dashboard*************************
+# Use console backend in development, SMTP in production
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development - prints emails to console
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Production - sends real emails
+
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8080')  # Base URL for password reset links
+SITE_NAME = os.environ.get('SITE_NAME', 'EDI System')  # Site name for emails
 
 # *********database settings*************************
 # SQLite database (default bots database)
