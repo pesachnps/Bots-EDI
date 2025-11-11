@@ -38,6 +38,11 @@ EMAIL_HOST_PASSWORD = ""    # Default: '' PASSWORD to use for the SMTP server de
 SERVER_EMAIL = f"{BOTSENV}@{HOSTNAME}"  # Sender of bots error reports. Default: 'root@localhost'
 # EMAIL_SUBJECT_PREFIX = ''   # This is prepended on email subject.
 
+# *********Email configuration for Admin Dashboard (development)*************************
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development - prints emails to console
+DEFAULT_FROM_EMAIL = 'EDI Admin <noreply@example.com>'  # Sender for admin dashboard emails
+SITE_URL = 'http://localhost:8080'  # Base URL for password reset links
+
 # *********database settings*************************
 # SQLite database (default bots database)
 DATABASES = {
@@ -102,7 +107,7 @@ USE_I18N = True
 # *********path settings*************************
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BOTSSYS, 'static')
-ROOT_URLCONF = 'bots.urls'
+ROOT_URLCONF = 'config.custom_urls'  # Use custom URL config for admin auth
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/bots/home'
 LOGOUT_URL = '/logout/'
@@ -115,6 +120,14 @@ SESSION_COOKIE_AGE = 3600                 # seconds a user needs to login when n
 SESSION_SAVE_EVERY_REQUEST = True         # if True: SESSION_COOKIE_AGE is interpreted as: since last activity
 SESSION_COOKIE_NAME = f"bots_sessionid_{BOTSENV}"
 CSRF_COOKIE_NAME = f"bots_csrftoken_{BOTSENV}"
+
+# *********CSRF Configuration for cross-origin requests (Admin Dashboard)*************************
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read CSRF token
+CSRF_COOKIE_SAMESITE = 'Lax'  # Allow cross-origin with same-site policy
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://localhost:8080']  # Trust both dev server and backend
+SESSION_COOKIE_SAMESITE = 'Lax'  # Allow session cookies to work across origins
+CSRF_USE_SESSIONS = False  # Store CSRF token in cookies, not sessions
+CSRF_COOKIE_SECURE = False  # Allow CSRF cookies over HTTP (dev only - set to True in production)
 
 # set in bots.ini
 # DEBUG = True
@@ -148,6 +161,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'usersys.admin_csrf_middleware.AdminAuthCSRFExemptMiddleware',  # Must be before CsrfViewMiddleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

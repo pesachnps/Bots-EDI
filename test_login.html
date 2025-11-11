@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4338CA;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+        .info {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Partner Login Test</h1>
+    <p>Testing the login form with the fixes applied.</p>
+    
+    <div id="message"></div>
+    
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                autocomplete="username"
+                required
+            >
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                autocomplete="current-password"
+                required
+            >
+        </div>
+        
+        <button type="submit">Sign In</button>
+    </form>
+    
+    <div class="info">
+        <h3>Test Instructions:</h3>
+        <ol>
+            <li>Try typing in both username and password fields</li>
+            <li>Try prefilling the password using browser autocomplete</li>
+            <li>Click submit to test the API endpoint</li>
+        </ol>
+        <p><strong>Test Credentials:</strong></p>
+        <p>Username: edi_admin<br>
+        Password: Bots@2025!EDI</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            messageDiv.innerHTML = '';
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/partner/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include',
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<div class="success">✅ Login successful! User: ' + data.user.username + '</div>';
+                } else {
+                    messageDiv.innerHTML = '<div class="error">❌ ' + (data.error || 'Login failed') + '</div>';
+                }
+            } catch (err) {
+                messageDiv.innerHTML = '<div class="error">❌ Network error: ' + err.message + '</div>';
+            }
+        });
+        
+        // Test if inputs are editable
+        document.getElementById('username').addEventListener('input', (e) => {
+            console.log('Username input detected:', e.target.value);
+        });
+        
+        document.getElementById('password').addEventListener('input', (e) => {
+            console.log('Password input detected (length):', e.target.value.length);
+        });
+    </script>
+</body>
+</html>

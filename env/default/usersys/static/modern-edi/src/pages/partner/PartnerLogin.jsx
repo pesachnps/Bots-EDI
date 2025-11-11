@@ -15,16 +15,17 @@ export default function PartnerLogin() {
     setLoading(true);
 
     try {
-      const response = await fetch('/modern-edi/api/v1/partner-portal/auth/login', {
+      const response = await fetch('/api/v1/partner/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
+        credentials: 'include',
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        navigate('/modern-edi/partner-portal/dashboard');
+        navigate('/partner-portal/dashboard');
       } else {
         setError(data.error || 'Login failed');
       }
@@ -57,11 +58,14 @@ export default function PartnerLogin() {
               </label>
               <input
                 id="username"
+                name="username"
                 type="text"
+                autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 bg-white"
                 placeholder="Enter your username"
               />
             </div>
@@ -72,11 +76,14 @@ export default function PartnerLogin() {
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 bg-white"
                 placeholder="Enter your password"
               />
             </div>
