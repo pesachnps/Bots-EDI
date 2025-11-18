@@ -24,6 +24,9 @@ if os.path.sep not in BOTSSYS:
 
 HOSTNAME = platform.node()
 
+# Debug mode - MUST be False in production
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 'yes')
+
 # *******settings for sending bots error reports via email**********************************
 # Get email from environment variable, fallback to default
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
@@ -137,9 +140,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'  # Allow session cookies to work across origins
 CSRF_USE_SESSIONS = False  # Store CSRF token in cookies, not sessions
 CSRF_COOKIE_SECURE = False  # Allow CSRF cookies over HTTP (dev only - set to True in production)
 
-# set in bots.ini
-# DEBUG = True
-# TEMPLATE_DEBUG = DEBUG
+# DEBUG is set earlier from environment variable
 SITE_ID = 1
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = "td=t6qbt82polyfw*q0d79roz!$+rv6@%b5$g)v*+^n0!n!&8j"
