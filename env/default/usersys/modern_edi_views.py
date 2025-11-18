@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 
 from .modern_edi_models import EDITransaction, TransactionHistory
+from .partner_models import Partner
 from .transaction_manager import TransactionManager
 from .file_manager import FileManager
 from .edi_parser import EDIParser
@@ -248,15 +249,7 @@ def create_transaction(request):
         
         # Generate EDI file if metadata provided
         if data.get('metadata'):
-            file_manager.write_file(
-                txn.file_path,
-                edi_parser.generate_edi_file(data, format_type='X12')
-            )
-            
-            # Update file size and hash
-            txn.file_size = file_manager.get_file_info(txn.file_path)['size']
-            txn.content_hash = file_manager.get_file_hash(txn.file_path)
-            txn.save()
+            transaction_manager.generate_edi_file(txn.id)
         
         return json_response({
             'success': True,
@@ -308,20 +301,7 @@ def update_transaction(request, transaction_id):
         
         # Regenerate EDI file if metadata changed
         if 'metadata' in data:
-            file_manager.write_file(
-                txn.file_path,
-                edi_parser.generate_edi_file({
-                    'partner_name': txn.partner_name,
-                    'document_type': txn.document_type,
-                    'po_number': txn.po_number,
-                    **data
-                }, format_type='X12')
-            )
-            
-            # Update file size and hash
-            txn.file_size = file_manager.get_file_info(txn.file_path)['size']
-            txn.content_hash = file_manager.get_file_hash(txn.file_path)
-            txn.save()
+            transaction_manager.generate_edi_file(txn.id)
         
         return json_response({
             'success': True,
@@ -617,28 +597,61 @@ def get_folder_stats(request, folder):
 @login_required
 def get_partners(request):
     """
-    Get list of trading partners
+    Get list of trading partners with stats
     
     GET /modern-edi/api/v1/partners/
     """
     try:
-        # Get unique partner names
-        partners = EDITransaction.objects.values_list('partner_name', flat=True).distinct().order_by('partner_name')
+        # Get all partners
+        partners_qs = Partner.objects.all().order_by('name')
+        
+        # Check for status filter
+        status = request.GET.get('status')
+        if status:
+            partners_qs = partners_qs.filter(status=status)
         
         partner_data = []
-        for partner_name in partners:
-            if partner_name:
-                # Get transaction count for this partner
-                count = EDITransaction.objects.filter(partner_name=partner_name).count()
+        for partner in partners_qs:
+            # Get transaction count for this partner
+            count = EDITransaction.objects.filter(partner_name=partner.name).count()
+            
+            # Get most recent transaction
+            recent_txn = EDITransaction.objects.filter(partner_name=partner.name).order_by('-created_at').first()
+            
+            partner_data.append({
+                'id': str(partner.id),
+                'partner_id': partner.partner_id,
+                'name': partner.name,
+                'communication_method': partner.communication_method,
+                'status': partner.status,
+                'transaction_count': count,
+                'last_activity': recent_txn.created_at.isoformat() if recent_txn else None,
+            })
+            
+        # Also find partners in transactions that are not in Partner model
+        # This helps finding ad-hoc or legacy partners
+        existing_names = set(p['name'] for p in partner_data)
+        txn_partners = EDITransaction.objects.exclude(partner_name__in=existing_names).values_list('partner_name', flat=True).distinct()
+        
+        for partner_name in txn_partners:
+            if not partner_name:
+                continue
                 
-                # Get most recent transaction
-                recent_txn = EDITransaction.objects.filter(partner_name=partner_name).order_by('-created_at').first()
-                
-                partner_data.append({
-                    'name': partner_name,
-                    'transaction_count': count,
-                    'last_transaction': recent_txn.created_at.isoformat() if recent_txn else None,
-                })
+            count = EDITransaction.objects.filter(partner_name=partner_name).count()
+            recent_txn = EDITransaction.objects.filter(partner_name=partner_name).order_by('-created_at').first()
+            
+            partner_data.append({
+                'id': 'legacy_' + partner_name, # Mock ID
+                'partner_id': 'Unknown',
+                'name': partner_name,
+                'communication_method': 'manual', # Assume manual
+                'status': 'active', # Assume active if transacting
+                'transaction_count': count,
+                'last_activity': recent_txn.created_at.isoformat() if recent_txn else None,
+            })
+            
+        # Sort by name again
+        partner_data.sort(key=lambda x: x['name'])
         
         return json_response({
             'success': True,

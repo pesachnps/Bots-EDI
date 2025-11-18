@@ -36,6 +36,11 @@ except ImportError:
     ScheduledReport = None
 
 try:
+    from .modern_edi_models import EDITransaction
+except ImportError:
+    EDITransaction = None
+
+try:
     from .sftp_config_service import SFTPConfigService
 except ImportError:
     SFTPConfigService = None
@@ -151,6 +156,16 @@ def admin_partners_list(request):
         # Serialize partners
         partners_data = []
         for partner in page_obj:
+            # Calculate stats if EDITransaction is available
+            count = 0
+            last_activity = None
+            
+            if EDITransaction:
+                count = EDITransaction.objects.filter(partner_name=partner.name).count()
+                recent = EDITransaction.objects.filter(partner_name=partner.name).order_by('-created_at').first()
+                if recent:
+                    last_activity = recent.created_at.isoformat()
+
             partners_data.append({
                 'id': str(partner.id),
                 'partner_id': partner.partner_id,
@@ -161,6 +176,8 @@ def admin_partners_list(request):
                 'contact_email': partner.contact_email,
                 'contact_name': partner.contact_name,
                 'created_at': partner.created_at.isoformat(),
+                'transaction_count': count,
+                'last_activity': last_activity,
             })
         
         return JsonResponse({
@@ -3508,8 +3525,55 @@ def admin_activity_logs_export(request):
         return JsonResponse({'error': 'Admin access required'}, status=403)
     
     try:
-        # TODO: Implement CSV export
-        return HttpResponse('Coming soon', content_type='text/plain')
+        # Check if ActivityLog model is available
+        if ActivityLog is None:
+            return JsonResponse({'error': 'Activity logging not available'}, status=503)
+            
+        from datetime import datetime
+        
+        action = request.GET.get('action', '')
+        user_type = request.GET.get('user_type', '')
+        search = request.GET.get('search', '')
+        
+        logs = ActivityLog.objects.all()
+        
+        if action and action != 'all':
+            logs = logs.filter(action=action)
+        
+        if user_type and user_type != 'all':
+            logs = logs.filter(user_type=user_type)
+        
+        if search:
+            logs = logs.filter(
+                Q(user_name__icontains=search) |
+                Q(details__icontains=search) |
+                Q(ip_address__icontains=search)
+            )
+        
+        # Order by most recent first
+        logs = logs.order_by('-timestamp')
+        
+        # Create CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="activity_logs_{datetime.now().strftime("%Y%m%d")}.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['Timestamp', 'User', 'User Type', 'Action', 'Resource Type', 'Resource ID', 'IP Address', 'Details'])
+        
+        for log in logs:
+            writer.writerow([
+                log.timestamp.isoformat(),
+                log.user_name,
+                log.user_type,
+                log.action,
+                log.resource_type,
+                log.resource_id,
+                log.ip_address,
+                json.dumps(log.details) if log.details else ''
+            ])
+            
+        return response
+        
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

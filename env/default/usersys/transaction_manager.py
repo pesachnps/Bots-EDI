@@ -5,11 +5,13 @@ Business logic for EDI transaction operations
 
 import os
 import subprocess
+import hashlib
 from datetime import datetime
 from django.conf import settings
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from .modern_edi_models import EDITransaction, TransactionHistory
+from .edi_parser import EDIParser
 
 
 class TransactionManager:
@@ -19,6 +21,7 @@ class TransactionManager:
         """Initialize the transaction manager"""
         self.botssys_dir = getattr(settings, 'BOTSSYS', 'botssys')
         self.modern_edi_base = os.path.join(self.botssys_dir, 'modern-edi')
+        self.edi_parser = EDIParser()
     
     def _get_folder_path(self, folder):
         """Get the file system path for a folder"""
@@ -367,22 +370,7 @@ class TransactionManager:
         Returns:
             Dictionary with parsed metadata
         """
-        # This is a placeholder - actual implementation would parse EDI formats
-        # For now, return basic file information
-        
-        if not os.path.exists(file_path):
-            raise ValidationError(f"File not found: {file_path}")
-        
-        metadata = {
-            'file_size': os.path.getsize(file_path),
-            'parsed_at': datetime.now().isoformat(),
-            'format': 'unknown'  # Would be determined by parsing
-        }
-        
-        # TODO: Implement actual EDI parsing using Bots grammars
-        # This would extract partner info, PO numbers, line items, etc.
-        
-        return metadata
+        return self.edi_parser.parse_edi_file(file_path)
     
     def generate_edi_file(self, transaction_id):
         """
@@ -399,19 +387,13 @@ class TransactionManager:
         except EDITransaction.DoesNotExist:
             raise ValidationError(f"Transaction {transaction_id} not found")
         
-        # This is a placeholder - actual implementation would generate EDI
-        # using Bots mappings and grammars
-        
-        # For now, create a simple text file with transaction data
-        content = f"""EDI Transaction
-Partner: {txn.partner_name}
-Document Type: {txn.document_type}
-PO Number: {txn.po_number or 'N/A'}
-Created: {txn.created_at.isoformat()}
-
-Metadata:
-{txn.metadata}
-"""
+        # Generate EDI content using parser
+        content = self.edi_parser.generate_edi_file({
+            'partner_name': txn.partner_name,
+            'document_type': txn.document_type,
+            'po_number': txn.po_number,
+            **txn.metadata
+        }, format_type='X12')  # Default to X12 for now
         
         # Write to file
         os.makedirs(os.path.dirname(txn.file_path), exist_ok=True)
@@ -419,7 +401,6 @@ Metadata:
             f.write(content)
         
         # Update file size and hash
-        import hashlib
         txn.file_size = os.path.getsize(txn.file_path)
         with open(txn.file_path, 'rb') as f:
             txn.content_hash = hashlib.sha256(f.read()).hexdigest()
@@ -445,11 +426,9 @@ Metadata:
         if txn.folder != 'sent':
             raise ValidationError("Can only check acknowledgment for sent transactions")
         
-        # This is a placeholder - actual implementation would check Bots
-        # for acknowledgment messages (997, CONTRL, etc.)
-        
-        # TODO: Implement actual acknowledgment checking
-        # This would query Bots database for related acknowledgment messages
+        # In a real implementation, this would query the Bots database
+        # for acknowledgment messages. For now, we rely on the status
+        # being updated by the background process.
         
         return {
             'transaction_id': str(transaction_id),
