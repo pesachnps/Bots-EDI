@@ -612,6 +612,23 @@ The Bots EDI project has enabled:
 
 ---
 
+## 📊 Development Activity
+
+Tracking lines of code added with each push to the repository:
+
+| Date | Lines Added |
+|------|-------------|
+| 2025-11-05 | +102,271 |
+| 2025-11-06 | +140,542 |
+| 2025-11-07 | +2,503 |
+| 2025-11-10 | +10,761 |
+| 2025-11-11 | +744 |
+| 2025-11-18 | +668 |
+
+*This table is automatically updated by the `update-readme-stats.ps1` script.*
+
+---
+
 **Installation Date**: 2025-11-05  
 **Last Updated**: 2025-11-06  
 **Version**: Bots EDI with 20 plugins + Admin/Partner Portals  
